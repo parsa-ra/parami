@@ -6,18 +6,19 @@ import React from "react"
 export const Tile = observer((props)=>(
     <View style={[
         {
-            borderRadius: 3, 
+            borderRadius: 4, 
             backgroundColor: props.store.tileColors[props.index],
             borderWidth: 1, 
             borderColor: '#dddddd',
-            minWidth: 100, 
-            minHeight: 100,
+            minWidth: 70, 
+            minHeight: 70,
             margin: 1
         }
     ]}>
         <TouchableHighlight style={[{
             flex: 1
-        }]} onPress={()=>props.store.flipTiles(props.index)}>
+        }]} onPress={()=>{props.store.flipTiles(props.index);
+                         props.store.updateState()}}>
             <View> 
                 
             </View>
