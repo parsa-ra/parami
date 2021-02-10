@@ -2,73 +2,57 @@ import { StatusBar } from 'expo-status-bar';
 import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import {RootStore} from "./models/Store" ;
-import {Tile} from "./components/Tile" ; 
+import {Tile, Controls, InfoBar, GameScreenModal} from "./components/" ; 
 import {window, screen} from "./env" ;
 import {autorun} from "mobx" 
-import {HexRandColor, HexColorDistance} from "./Functions/Color" ;
+import {colors} from "./Functions/Utils" ;
+
 import {observer} from "mobx-react-lite" ; 
 
 //const color1 = '#35a492' ; 
 //const color2 ='#12a0df' ; 
-const colorDistanceThreshold = 8000 ; 
-const color1 = HexRandColor() ;
-var color2 = HexRandColor() ; 
-while(true){
-  let trial = 1 ; 
-  if(HexColorDistance(color1, color2) > colorDistanceThreshold){
-    console.log(`Condition Reached after ${trial} Trials`) ; 
-    break; 
-  }else{
-    color2 = HexRandColor() ; 
-    trial += 1 ; 
-  } 
-}
+const possibleColors = colors() ; 
 
 //TODO: Generate Some random tile counts 
 const width = 5 ;
 const height = 5 ;
 
-//TODO: Generating Solvable initialColor
+// TODO: Add Difficulty level dependent on number of random flips 
+const randomFlipNumber = Math.floor(Math.random()*4) + 1 ; // Number of flips //TODO:I think should depend to width and height of board.
+
 var initialTileColors = []
 for(var i=0; i< width*height; i++){
-  initialTileColors.push(color1) ; 
+  initialTileColors.push(possibleColors[0]) ; 
 }
-console.log(initialTileColors)
+//console.log(initialTileColors)
 
 const store = RootStore.create({
-  possibleColors: [color1, color2], 
+  possibleColors: [possibleColors[0], possibleColors[1]], 
   movesCount: 0,
   flipMod: '4',
   widthTileNum: width,
   heightTileNum: height,
   edgeHandling: 'None',
+  initialState: initialTileColors,
   tileColors: initialTileColors,
+  goodEndFlipCount: randomFlipNumber, 
   gameStatus: 'notdone',
+  difficulty: 'medium',
 }) ; 
 
-
-const InfoBar = observer((props)=>(
-  <View style={{
-    flexDirection: 'row',
-    marginBottom: 20, 
-    backgroundColor: '#efefefef',
-    borderWidth: 3,
-    borderRadius: 3,
-    borderColor: '#aaaaaa'
-  }}>
-    <View  style={{
-      flex:1,
-      alignItems: 'center',
-      justifyContent: 'center'}}>
-      <Text> {props.store.movesCount} </Text>
-    </View>
-  </View>
-));
+for(let i=0; i<randomFlipNumber; i++){
+  let toBeFlipIDX = Math.floor(Math.random() * store.tileNum);
+  store.flipTiles(toBeFlipIDX, false) ; 
+}
 
 
 autorun(()=>{
-    console.log(store.tileColors) ; 
+  console.log(store.tileColors) ;
+  console.log(store.gameStatus); 
 }) ; 
+
+
+store.setTileColors() ; 
 
 
 export default function App() {
@@ -94,13 +78,17 @@ export default function App() {
       flexDirection: 'column',
     }]}>
       <InfoBar store={store} />
+      <GameScreenModal store={store}/>
 
       {[...Array(store.heightTileNum).keys()].map(height_idx => (
         <View style={[
           {flexDirection: 'row'}
-          ]}>
+          ]}
+          key={
+            height_idx
+          }>
           {[...Array(store.widthTileNum).keys()].map(width_idx =>
-          <Tile index={store.widthTileNum* (height_idx) + width_idx} store={store}/>
+          <Tile index={store.widthTileNum* (height_idx) + width_idx} store={store} key={height_idx*width + width_idx}/>
           )
           }
         </View>

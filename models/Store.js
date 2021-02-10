@@ -1,6 +1,7 @@
 import React from "react"
-import {types} from "mobx-state-tree"
+import {types, cast} from "mobx-state-tree"
 import {window, screen} from "../env" 
+import {colors} from "../Functions/Utils"
 //import { string } from "mobx-state-tree/dist/internal";
 
 
@@ -30,9 +31,15 @@ export const RootStore = types.model({
     flipMod: types.enumeration(['4', '8']), // The mode which tile colors flip upon push.
     widthTileNum: types.number, // Number of Tiles in X axis
     heightTileNum: types.number, // Number of Tiles in Y axis
+
+    initialState: types.array(types.string),
     tileColors: types.array(types.string),
+    goodEndFlipCount: types.number, // Upon gamestatus done notify user with how many moves it could be solved and suggest if he/she want to try that same configuration again
+
     edgeHandling: types.enumeration(['None']), // How edges in flipping handled
     gameStatus: types.enumeration(['done', 'notdone']),
+
+    difficulty: types.enumeration(['low', 'medium', 'hard']),
 
     //////////////////
     // General States
@@ -44,7 +51,7 @@ export const RootStore = types.model({
     
 }).actions((self) =>{
     return{
-    flipTiles(tileIndex){
+    flipTiles(tileIndex, performOnTiles=true){
         console.log('flipTiles called') ; 
         if(self.edgeHandling == 'None' & self.flipMod == '4'){
             //console.log(self.relativeIndexesForMode4()) ; 
@@ -53,33 +60,34 @@ export const RootStore = types.model({
                 if(elem == -1 || elem == +1){
                     //Emulation of same Height condition
                     if(Math.floor(idx/self.widthTileNum) == Math.floor(tileIndex/self.widthTileNum) ){
-                        self.filpSpecificTile(idx) ; 
+                        self.filpSpecificTile(idx, performOnTiles) ; 
                     }
                 }else{
                     if(idx >=0 && idx < self.tileNum){
-                        self.filpSpecificTile(idx) ; 
+                        self.filpSpecificTile(idx, performOnTiles) ; 
                     }
                 }
-                // if(idx >= 0 && idx < self.tileNum){
-                //     self.filpSpecificTile(idx) ; 
-                // }
             }); 
         }
-
-        //TODO: Handle other Combinations
-
+        //TODO: Handle other Modes
     },  
-
     updateState(){
         self.movesCount += 1 ;
         self.gameStatus = self.allTheSame ? 'done' : 'notdone' ; 
-    }
-    ,
-    filpSpecificTile(idx){ 
-        if(self.tileColors[idx] == self.possibleColors[0]){
-            self.tileColors[idx] = self.possibleColors[1]; 
+    },
+    filpSpecificTile(idx, performOnTiles){ 
+        if(performOnTiles){
+            if(self.tileColors[idx] == self.possibleColors[0]){
+                self.tileColors[idx] = self.possibleColors[1]; 
+            }else{
+                self.tileColors[idx] = self.possibleColors[0]
+            }
         }else{
-            self.tileColors[idx] = self.possibleColors[0]
+            if(self.initialState[idx] == self.possibleColors[0]){
+                self.initialState[idx] = self.possibleColors[1]; 
+            }else{
+                self.initialState[idx] = self.possibleColors[0]
+            }
         }
     },
     toggleFlipMod(){
@@ -88,6 +96,38 @@ export const RootStore = types.model({
         }else{
             self.flipMod = '4' ;
         }
+    },
+    setTileColors(colors=null){
+        if(colors){
+            self.tileColors = colors ;
+        }else{
+            //console.log(self.initialState)
+            //console.log(typeof(self.initialState))
+            //self.tileColors = cast(self.initialState) ;
+            //TODO: should be replaces with above ... above make some errors. 
+            for(let i=0; i<self.tileNum; i++){
+                self.tileColors[i] = self.initialState[i] ; 
+            }
+            self.gameStatus = 'notdone' ; 
+            self.movesCount = 0 ; 
+        }
+    },
+    setUpNewGame(){
+        const possibleColors = colors() ; 
+        self.possibleColors = [possibleColors[0], possibleColors[1]] ; 
+
+        //TODO: Mapping between hardness to random flippings
+        const randomFlipNumber = Math.floor(Math.random()*10) + 3 ;
+
+        for(var i=0; i< self.widthTileNum*self.heightTileNum; i++){
+            self.initialState[i] = possibleColors[0]
+        } 
+        for(let i=0; i<randomFlipNumber; i++){
+            let toBeFlipIDX = Math.floor(Math.random() * self.tileNum);
+            self.flipTiles(toBeFlipIDX, false) ; 
+        }
+        self.setTileColors() ; 
+          
     }
     }
 }).views((self) => {
@@ -103,10 +143,19 @@ export const RootStore = types.model({
     },
     get allTheSame(){
         for(let i=1; i<self.tileNum; i++){
-            if(self.tileColors[i-1] !== self.tileColors[i])
-            {return false}
-            return true ; 
+            if(self.tileColors[i-1] != self.tileColors[i]){
+                return false ;
+            }
         }
+        return true ; 
+    },
+    get tileSize(){
+        const margin = 100
+        const w =  Math.floor((self.dims.width-margin)/ self.widthTileNum) ;
+        const h =  Math.floor((self.dims.height-margin)/ self.heightTileNum) ;  
+        return w>h ? h : w ;
     }
 }
 }) ; 
+
+

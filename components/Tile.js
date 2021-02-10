@@ -3,16 +3,17 @@ import {observer} from "mobx-react-lite"
 import React from "react" 
 
 
+
 export const Tile = observer((props)=>(
     <View style={[
         {
             borderRadius: 4, 
-            backgroundColor: props.store.tileColors[props.index],
-            borderWidth: 1, 
-            borderColor: '#dddddd',
-            minWidth: 70, 
-            minHeight: 70,
-            margin: 1
+            backgroundColor: props.store.tileColors[props.index], //Important
+            //borderWidth: 1, 
+            //borderColor: '#dddddd',
+            minWidth:  props.store.tileSize, 
+            minHeight: props.store.tileSize,
+            margin: 2
         }
     ]}>
         <TouchableHighlight style={[{
