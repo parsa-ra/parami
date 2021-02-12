@@ -3,6 +3,7 @@ import {observer} from "mobx-react-lite" ;
 import {View, Text, TouchableHighlight} from "react-native" ; 
 import {colors, textStyle} from "../styles/styles" ; 
 import {gameName, version} from "../env" ; 
+import { applySnapshot, getSnapshot } from "mobx-state-tree";
 
 export const HomeScreen = observer((props)=>(
     <View style={{
@@ -30,7 +31,12 @@ export const HomeScreen = observer((props)=>(
                     padding: 15,
                     borderRadius: 6, 
                     margin: 10,
-                }} onPress={()=>(props.rootStore.setNavStack('game'))} >
+
+                }} onPress={()=>{ /* Applying SnapShot of Settings Upon Creation of New Game from Home 
+                    Screen */ 
+                                 applySnapshot(props.rootStore.store, getSnapshot(props.rootStore.toBeAppliedStore)) ;
+                                 props.rootStore.store.setUpNewGame();
+                                 props.rootStore.setNavStack('game');}} >
                     <Text style={[
                         {
                             fontSize: 25,

@@ -5,12 +5,12 @@ export const colors = {
         trinary: '#44a2e2',
         fillArea: '#fafafa',
         fillAreaDark: '#eaeaea',
-        fllAreaDarkest: '#d1d1d1',
+        fillAreaDarkest: '#d1d1d1',
         textFillAreaColor: '#323232' ,
         textFillAreaLight: '#868686' ,
         textFillAreaLightest: '#9a9a9a', 
-        textColor: '#fefefe'
-
+        textColor: '#fefefe',
+        warningColor: '#ffcc00',
     }
 }
 

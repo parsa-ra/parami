@@ -10,6 +10,7 @@ import {autorun} from "mobx"
 import {colors} from "./Functions/Utils" ;
 
 import {observer} from "mobx-react-lite" ; 
+import { applySnapshot, getSnapshot, unprotect } from 'mobx-state-tree';
 
 const possibleColors = colors() ; 
 
@@ -26,13 +27,13 @@ for(var i=0; i< width*height; i++){
 }
 //console.log(initialTileColors)
 //console.log(GameStore) ; 
-//console.log(GameStore.properties.flipMode._types)  ; 
+//console.log(GameStore.properties.difficulty._types)  ; 
 
 // TODO: Decide Persistent Storage, For example, local or using firebase
 const store = GameStore.create({
   possibleColors: [possibleColors[0], possibleColors[1]], 
   movesCount: 0,
-  flipMode: '4',
+  flipMode: '8',
   widthTileNum: width,
   heightTileNum: height,
   edgeHandling: 'None',
@@ -41,17 +42,7 @@ const store = GameStore.create({
   goodEndFlipCount: randomFlipNumber, 
   gameStatus: 'notdone',
   gameSolution: [],
-  difficulty: 'medium',
-}) ; 
-
-const rootStore = RootStore.create({
-    firstTime: true,
-    totalTimePlayed: 0, 
-    totalGamePlayed: 0, 
-    store: {},
-    navStack: [
-       'home'
-    ]
+  difficulty: 'Medium',
 }) ; 
 
 for(let i=0; i<randomFlipNumber; i++){
@@ -60,6 +51,19 @@ for(let i=0; i<randomFlipNumber; i++){
 }
 store.setTileColors() ; 
 
+const rootStore = RootStore.create({
+    firstTime: true,
+    totalTimePlayed: 0, 
+    totalGamePlayed: 0, 
+    //store: {},
+    //toBeAppliedStore: {},
+    navStack: [
+       'home'
+    ]
+}) ; 
+
+applySnapshot(rootStore.store, getSnapshot(store)) ; 
+applySnapshot(rootStore.toBeAppliedStore, getSnapshot(store)) ; 
 
 autorun(()=>{
   
@@ -68,11 +72,12 @@ autorun(()=>{
 const Navigator = observer((props)=>{
     switch(props.rootStore.lastNavEntry){
       case 'home':
-        return <HomeScreen rootStore={props.rootStore} store={props.store}/>
+        return <HomeScreen rootStore={props.rootStore} store={props.rootStore.store}/>
       case 'game':
-        return <GameScreen rootStore={props.rootStore} store={props.store}/>
+        return <GameScreen rootStore={props.rootStore} store={props.rootStore.store}/>
       case 'setting':
-        return <SettingScreen rootStore={props.rootStore} store={props.store}/>
+        // Note what we pass to the Store... 
+        return <SettingScreen rootStore={props.rootStore} store={props.rootStore.toBeAppliedStore}/>
     }
 }) ; 
 
@@ -99,7 +104,7 @@ export default function App() {
     <View style={[styles.container, {
     }]}>
 
-      <Navigator store={store} rootStore={rootStore}/>
+      <Navigator rootStore={rootStore}/>
       
       <StatusBar hidden={true} />
     </View>

@@ -40,7 +40,7 @@ export const GameStore = types.model({
     gameStatus: types.enumeration(['done', 'notdone']),
     gameSolution: types.array(types.number),
 
-    difficulty: types.enumeration(['low', 'medium', 'hard']),
+    difficulty: types.enumeration(['Easy', 'Medium', 'Hard']),
 
     //////////////////
     // General States
@@ -54,29 +54,54 @@ export const GameStore = types.model({
     return{
     flipTiles(tileIndex, performOnTiles=true){
         //console.log('flipTiles called') ; 
-        if(self.edgeHandling == 'None' & self.flipMode == '4'){
+        if(self.edgeHandling == 'None' && self.flipMode == '4'){
             //console.log(self.relativeIndexesForMode4()) ; 
             self.relativeIndexesForMode4.forEach(elem => {
                 const idx = elem+tileIndex ; 
                 if(elem == -1 || elem == +1){
                     //Emulation of same Height condition
                     if(Math.floor(idx/self.widthTileNum) == Math.floor(tileIndex/self.widthTileNum) ){
-                        self.filpSpecificTile(idx, performOnTiles) ; 
+                        self.flipSpecificTile(idx, performOnTiles) ; 
                     }
                 }else{
                     if(idx >=0 && idx < self.tileNum){
-                        self.filpSpecificTile(idx, performOnTiles) ; 
+                        self.flipSpecificTile(idx, performOnTiles) ; 
                     }
                 }
             }); 
         }
+        if(self.edgeHandling == 'None' && self.flipMode == '8'){
+            self.relativeCoordsForMode8.forEach(elem =>{
+                //const idx = elem + tileIndex ; 
+                const PervCoord = [tileIndex%self.widthTileNum ,Math.floor(tileIndex/self.widthTileNum)]    // previous coordinate (x,y)
+                const NewCoord = [PervCoord[0]+elem[0], PervCoord[1]+elem[1]]
+                if(NewCoord[0] >= 0 && NewCoord[0] < self.widthTileNum && NewCoord[1] >=0 && NewCoord[1] < self.heightTileNum){
+                    const idx = tileIndex + elem[0] + elem[1]*self.widthTileNum ; 
+                    console.log(idx) ; 
+                    self.flipSpecificTile(idx, performOnTiles) ; 
+                }
+            });
+        }
         //TODO: Handle other Modes
     },  
+    setDifficulty(diff){
+        self.difficulty = diff ; 
+    },
     updateState(){
         self.movesCount += 1 ;
         self.gameStatus = self.allTheSame ? 'done' : 'notdone' ; 
     },
-    filpSpecificTile(idx, performOnTiles){ 
+    setTileCount(dim, value){
+        if(dim == "width"){
+            self.widthTileNum = value ; 
+        }else if(dim == "height"){
+            self.heightTileNum = value ;
+        }else{
+            console.warn("Unexpected Dimensional Value") ;
+        }
+    }
+    ,
+    flipSpecificTile(idx, performOnTiles){ 
         if(performOnTiles){
             if(self.tileColors[idx] == self.possibleColors[0]){
                 self.tileColors[idx] = self.possibleColors[1]; 
@@ -91,12 +116,8 @@ export const GameStore = types.model({
             }
         }
     },
-    toggleFlipMode(){
-        if(self.flipMode == '4'){
-            self.flipMode = '8' ;
-        }else{
-            self.flipMode = '4' ;
-        }
+    setFlipMode(mode){
+        self.flipMode = mode ; 
     },
     setTileColors(colors=null){
         if(colors){
@@ -118,7 +139,7 @@ export const GameStore = types.model({
         self.possibleColors = [possibleColors[0], possibleColors[1]] ; 
 
         //TODO: Mapping between hardness to random flippings
-        const randomFlipNumber = Math.floor(Math.random()*10) + 3 ;
+        const randomFlipNumber = Math.floor(Math.random()*(self.tileNum/2)) + 3 ;
 
         // reset solution 
         self.gameSolution.clear() ; 
@@ -131,7 +152,7 @@ export const GameStore = types.model({
             self.flipTiles(toBeFlipIDX, false) ; 
         }
         self.setTileColors() ;  
-        self.goodEndFlipCount = randomFlipNumber ;         
+        self.goodEndFlipCount = randomFlipNumber ;    
     }
     }
 }).views((self) => {
@@ -142,8 +163,9 @@ export const GameStore = types.model({
         get relativeIndexesForMode4(){
             return [0, +1, -1, -self.widthTileNum, +self.widthTileNum]
         },
-        get relativeIndexesForMode8(){
-            return [0, +1, -1, -self.widthTileNum-1, -self.widthTileNum, -self.widthTileNum+1, +self.widthTileNum-1, +self.widthTileNum, + self.widthTileNum+1]
+        get relativeCoordsForMode8(){
+            return [[0,0], [1,0], [-1,0], [-1,1],[-1,-1],[1,1],[1,-1], [0,-1], [0,1]]
+            // return [0, +1, -1, -self.widthTileNum-1, -self.widthTileNum, -self.widthTileNum+1, +self.widthTileNum-1, +self.widthTileNum, + self.widthTileNum+1]
         },
         get allTheSame(){
             for(let i=1; i<self.tileNum; i++){
