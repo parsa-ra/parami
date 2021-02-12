@@ -1,21 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
-import {RootStore} from "./models/Store" ;
-import {Tile, Controls, InfoBar, GameScreenModal} from "./components/" ; 
+import {AsyncStorage} from 'react-native'
+import {GameStore} from "./models/GameStore" ;
+import {RootStore} from "./models/RootStore" ; 
+import {HomeScreen, GameScreen, SettingScreen} from "./Screens"; 
 import {window, screen} from "./env" ;
 import {autorun} from "mobx" 
 import {colors} from "./Functions/Utils" ;
 
 import {observer} from "mobx-react-lite" ; 
 
-//const color1 = '#35a492' ; 
-//const color2 ='#12a0df' ; 
 const possibleColors = colors() ; 
 
 //TODO: Generate Some random tile counts 
-const width = 5 ;
-const height = 5 ;
+const width = 6 ;
+const height = 6 ;
 
 // TODO: Add Difficulty level dependent on number of random flips 
 const randomFlipNumber = Math.floor(Math.random()*4) + 1 ; // Number of flips //TODO:I think should depend to width and height of board.
@@ -25,11 +25,14 @@ for(var i=0; i< width*height; i++){
   initialTileColors.push(possibleColors[0]) ; 
 }
 //console.log(initialTileColors)
+//console.log(GameStore) ; 
+//console.log(GameStore.properties.flipMode._types)  ; 
 
-const store = RootStore.create({
+// TODO: Decide Persistent Storage, For example, local or using firebase
+const store = GameStore.create({
   possibleColors: [possibleColors[0], possibleColors[1]], 
   movesCount: 0,
-  flipMod: '4',
+  flipMode: '4',
   widthTileNum: width,
   heightTileNum: height,
   edgeHandling: 'None',
@@ -37,22 +40,41 @@ const store = RootStore.create({
   tileColors: initialTileColors,
   goodEndFlipCount: randomFlipNumber, 
   gameStatus: 'notdone',
+  gameSolution: [],
   difficulty: 'medium',
+}) ; 
+
+const rootStore = RootStore.create({
+    firstTime: true,
+    totalTimePlayed: 0, 
+    totalGamePlayed: 0, 
+    store: {},
+    navStack: [
+       'home'
+    ]
 }) ; 
 
 for(let i=0; i<randomFlipNumber; i++){
   let toBeFlipIDX = Math.floor(Math.random() * store.tileNum);
   store.flipTiles(toBeFlipIDX, false) ; 
 }
+store.setTileColors() ; 
 
 
 autorun(()=>{
-  console.log(store.tileColors) ;
-  console.log(store.gameStatus); 
+  
 }) ; 
 
-
-store.setTileColors() ; 
+const Navigator = observer((props)=>{
+    switch(props.rootStore.lastNavEntry){
+      case 'home':
+        return <HomeScreen rootStore={props.rootStore} store={props.store}/>
+      case 'game':
+        return <GameScreen rootStore={props.rootStore} store={props.store}/>
+      case 'setting':
+        return <SettingScreen rootStore={props.rootStore} store={props.store}/>
+    }
+}) ; 
 
 
 export default function App() {
@@ -75,26 +97,11 @@ export default function App() {
 
   return (
     <View style={[styles.container, {
-      flexDirection: 'column',
     }]}>
-      <InfoBar store={store} />
-      <GameScreenModal store={store}/>
 
-      {[...Array(store.heightTileNum).keys()].map(height_idx => (
-        <View style={[
-          {flexDirection: 'row'}
-          ]}
-          key={
-            height_idx
-          }>
-          {[...Array(store.widthTileNum).keys()].map(width_idx =>
-          <Tile index={store.widthTileNum* (height_idx) + width_idx} store={store} key={height_idx*width + width_idx}/>
-          )
-          }
-        </View>
-      )
-      )}
-      <StatusBar style="auto" />
+      <Navigator store={store} rootStore={rootStore}/>
+      
+      <StatusBar hidden={true} />
     </View>
   );
 }
@@ -102,8 +109,10 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    margin: 0,
+    padding: 0,
+    flexDirection: 'column',
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
   },
 });

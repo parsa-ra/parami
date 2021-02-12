@@ -3,6 +3,10 @@ import {observer} from "mobx-react-lite" ;
 import { View, Text, TouchableHighlight} from "react-native";
 import {colors} from "../styles/styles" ; 
 
+const fontStyle = {
+    
+}
+
 export const InfoBar = observer((props)=>(
     <View style={{
       flexDirection: 'row',
@@ -22,7 +26,8 @@ export const InfoBar = observer((props)=>(
                 <Text style={{
                     fontSize: 20,
                     color: colors.light.textColor,
-                    padding: 10,
+                    padding: 5,
+                    adjustsFontSizeToFit: true 
                 }}>
                     Reset
                 </Text>
@@ -36,6 +41,9 @@ export const InfoBar = observer((props)=>(
         <Text style={{
             color: colors.light.textFillAreaColor,
             fontSize: 20,
+            textAlign: 'center',
+            flexWrap: 'wrap',
+            adjustsFontSizeToFit: true, 
         }}> Moves: {props.store.movesCount} </Text>
       </View><TouchableHighlight onPress={()=>{props.store.setUpNewGame()}}> 
             <View style={{
@@ -47,7 +55,8 @@ export const InfoBar = observer((props)=>(
                 <Text style={{
                     fontSize: 20,
                     color: colors.light.textColor,
-                    padding: 10,
+                    padding: 5,
+                    adjustsFontSizeToFit: true, 
                 }}>
                     New Game
                 </Text>

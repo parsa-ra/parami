@@ -22,13 +22,13 @@ export const Position = types.model({
     y: types.number,
 })
 
-export const RootStore = types.model({
+export const GameStore = types.model({
     ////////////////////////
     // Game Dynamics States 
     ////////////////////////
     possibleColors: types.array(types.string), // ...
     movesCount: types.number, // Number of moves player made
-    flipMod: types.enumeration(['4', '8']), // The mode which tile colors flip upon push.
+    flipMode: types.enumeration(['4', '8']), // The mode which tile colors flip upon push.
     widthTileNum: types.number, // Number of Tiles in X axis
     heightTileNum: types.number, // Number of Tiles in Y axis
 
@@ -38,6 +38,7 @@ export const RootStore = types.model({
 
     edgeHandling: types.enumeration(['None']), // How edges in flipping handled
     gameStatus: types.enumeration(['done', 'notdone']),
+    gameSolution: types.array(types.number),
 
     difficulty: types.enumeration(['low', 'medium', 'hard']),
 
@@ -52,8 +53,8 @@ export const RootStore = types.model({
 }).actions((self) =>{
     return{
     flipTiles(tileIndex, performOnTiles=true){
-        console.log('flipTiles called') ; 
-        if(self.edgeHandling == 'None' & self.flipMod == '4'){
+        //console.log('flipTiles called') ; 
+        if(self.edgeHandling == 'None' & self.flipMode == '4'){
             //console.log(self.relativeIndexesForMode4()) ; 
             self.relativeIndexesForMode4.forEach(elem => {
                 const idx = elem+tileIndex ; 
@@ -90,11 +91,11 @@ export const RootStore = types.model({
             }
         }
     },
-    toggleFlipMod(){
-        if(self.flipMod == '4'){
-            self.flipMod = '8' ;
+    toggleFlipMode(){
+        if(self.flipMode == '4'){
+            self.flipMode = '8' ;
         }else{
-            self.flipMod = '4' ;
+            self.flipMode = '4' ;
         }
     },
     setTileColors(colors=null){
@@ -119,43 +120,46 @@ export const RootStore = types.model({
         //TODO: Mapping between hardness to random flippings
         const randomFlipNumber = Math.floor(Math.random()*10) + 3 ;
 
+        // reset solution 
+        self.gameSolution.clear() ; 
         for(var i=0; i< self.widthTileNum*self.heightTileNum; i++){
             self.initialState[i] = possibleColors[0]
         } 
         for(let i=0; i<randomFlipNumber; i++){
             let toBeFlipIDX = Math.floor(Math.random() * self.tileNum);
+            self.gameSolution.push(toBeFlipIDX) ; 
             self.flipTiles(toBeFlipIDX, false) ; 
         }
-        self.setTileColors() ; 
-          
+        self.setTileColors() ;  
+        self.goodEndFlipCount = randomFlipNumber ;         
     }
     }
 }).views((self) => {
-    return{
-    get tileNum(){
-        return self.widthTileNum * self.heightTileNum
-    },
-    get relativeIndexesForMode4(){
-        return [0, +1, -1, -self.widthTileNum, +self.widthTileNum]
-    },
-    get relativeIndexesForMode8(){
-        return [0, +1, -1, -self.widthTileNum-1, -self.widthTileNum, -self.widthTileNum+1, +self.widthTileNum-1, +self.widthTileNum, + self.widthTileNum+1]
-    },
-    get allTheSame(){
-        for(let i=1; i<self.tileNum; i++){
-            if(self.tileColors[i-1] != self.tileColors[i]){
-                return false ;
+        return{
+        get tileNum(){
+            return self.widthTileNum * self.heightTileNum
+        },
+        get relativeIndexesForMode4(){
+            return [0, +1, -1, -self.widthTileNum, +self.widthTileNum]
+        },
+        get relativeIndexesForMode8(){
+            return [0, +1, -1, -self.widthTileNum-1, -self.widthTileNum, -self.widthTileNum+1, +self.widthTileNum-1, +self.widthTileNum, + self.widthTileNum+1]
+        },
+        get allTheSame(){
+            for(let i=1; i<self.tileNum; i++){
+                if(self.tileColors[i-1] != self.tileColors[i]){
+                    return false ;
+                }
             }
+            return true ; 
+        },
+        get tileSize(){
+            const margin = 50 ; 
+            const w =  Math.floor((self.dims.width-margin)/ self.widthTileNum) ;
+            const h =  Math.floor((self.dims.height-margin)/ self.heightTileNum) ;  
+            return w>h ? h : w ;
         }
-        return true ; 
-    },
-    get tileSize(){
-        const margin = 100
-        const w =  Math.floor((self.dims.width-margin)/ self.widthTileNum) ;
-        const h =  Math.floor((self.dims.height-margin)/ self.heightTileNum) ;  
-        return w>h ? h : w ;
     }
-}
 }) ; 
 
 

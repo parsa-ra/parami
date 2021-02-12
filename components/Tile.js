@@ -13,7 +13,7 @@ export const Tile = observer((props)=>(
             //borderColor: '#dddddd',
             minWidth:  props.store.tileSize, 
             minHeight: props.store.tileSize,
-            margin: 2
+            margin: 4,
         }
     ]}>
         <TouchableHighlight style={[{

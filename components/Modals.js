@@ -1,14 +1,8 @@
 import React from "react" ; 
 import {observer} from "mobx-react-lite" ; 
 import { View, Text, Modal, TouchableHighlight } from "react-native";
-import {colors} from "../styles/styles" ; 
+import {colors, textStyle} from "../styles/styles" ; 
 
-
-const textStyle = {
-    fontSize: 25,
-    color: colors.light.textFillAreaColor,
-    textAlign: 'center'
-}
 
 const newLine = "~{'\n'}"
 
@@ -31,22 +25,31 @@ const NotificationConstructor = (props) => {
         style={{
             ...textStyle
         }}> Wow, just Wow, your moves was fewer than our expectations, 
-        {"\n"} Consider applying for NASA or something ...  </Text>         
-            
+        {"\n"} Consider applying for NASA or something ...  </Text>             
     }
 }
 
 export const GameScreenModal = observer((props)=>(
     props.store.gameStatus == 'done' ? 
+    <View style={{
+        zIndex: 1,
+        position: 'absolute',
+        left: 0,
+        right: 0 ,
+        top: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(140,140,140,0.8)'
+    }}>
     <View
             style={{
-                zIndex: 1,
+                zIndex: 2,
                 backgroundColor: colors.light.fillArea,
                 position: 'absolute',
-                left: 10, 
+                left: 5, 
                 top: Math.floor(props.store.dims.height/4),
                 bottom: Math.floor(props.store.dims.height/4),
-                right: 10,
+                right: 5,
+                padding: 20,
                 borderRadius: 4, 
                 // borderColor: '#aeaeee',
                 // borderWidth: 3
@@ -99,6 +102,7 @@ export const GameScreenModal = observer((props)=>(
                     </TouchableHighlight>    
             </View>
         </View>
+    </View>
     </View>
     : null 
 )); 
