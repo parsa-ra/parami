@@ -57,7 +57,8 @@ export const GameScreenModal = observer((props)=>(
         <View style={{flex:1,
                       flexDirection: 'column',
                       alignItems:'center',
-                      justifyContent: 'space-evenly'
+                      justifyContent: 'space-evenly',
+                      adjustsFontSizeToFit: true 
                       }}>
 
             <NotificationConstructor playerMoveCount={props.store.movesCount}  goodEndFlipCount={props.store.goodEndFlipCount}/>

@@ -19,6 +19,5 @@ export const colors = {
 export const textStyle = {
     fontSize: 25,
     color: colors.light.textFillAreaColor,
-    adjustsFontSizeToFit: true,
     textAlign: 'center'
 }

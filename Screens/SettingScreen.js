@@ -1,6 +1,6 @@
 import React from "react" ; 
 import {observer} from "mobx-react-lite" ;
-import {View, Text, TouchableHighlight, ScrollView, StyleSheet} from "react-native" ; 
+import {View, Text, TouchableHighlight, ScrollView, StyleSheet, StatusBar} from "react-native" ; 
 import {NavBar} from "../components/NavBar" ; 
 import {colors} from "../styles/styles" ; 
 import {GameStore} from "../models/GameStore"
@@ -37,7 +37,7 @@ const ModeItem = observer((props)=>(
         }>
             <Text style={{
                 fontSize: 15, 
-                fontColor: colors.light.textFillAreaLightest,
+                color: colors.light.textFillAreaLightest,
                 textAlign: 'center',
             }}>
                 {props.modeName} {"\n"}
@@ -51,50 +51,52 @@ const ModeItem = observer((props)=>(
 export const SettingScreen = observer((props)=>(
     <View style={{
         flexDirection: 'column',
-        flex:'1',
+        flex:1,
         alignItems: 'stretch',
+        //paddingTop: StatusBar.currentHeight, 
     }}>
-        <NavBar store={props.store} rootStore={props.rootStore}/>
-        <View>
-        <Text style={[styles.settingHeader]}>
-                Modes
-            </Text>
-            <Text style={[styles.settingDescription]}>
-                Change How the flipping occurs.
-            </Text>
-            <View style={[styles.horizontalLine]}/>
-            <ScrollView style={
-                {minHeight: Math.floor(props.store.dims.height/2),
-                backgroundColor: colors.light.fillArea,
-                flexDirection: 'column',
-                borderRadius: 4,
-                margin: 2,
-                //alignItems: 'center',
-            } 
-            }>
-                {
-                    GameStore.properties.flipMode._types.map(item => (
-                        <ModeItem modeName={item.value} store={props.store} key={item.value}/>
-                    ))
-                }
-
-            </ScrollView>
-
-
+            <NavBar store={props.store} rootStore={props.rootStore}/>
+            <View>
             <Text style={[styles.settingHeader]}>
-                Difficulty
-            </Text>
-            <Text style={[styles.settingDescription]}>
-                How perplexing the solution do you want to be?
-            </Text>
-            <View style={[styles.horizontalLine]}/>
-            <Text style={[styles.settingHeader]}>
-                Tile Count
-            </Text> 
-            <Text style={[styles.settingDescription]}>
-                How many tiles do you want to appear in your screen?
-            </Text>
-            <View style={[styles.horizontalLine]}/>
-        </View>
+                    Modes
+                </Text>
+                <Text style={[styles.settingDescription]}>
+                    Change How the flipping occurs.
+                </Text>
+                <View style={[styles.horizontalLine]}/>
+                <ScrollView style={
+                    {
+                    backgroundColor: colors.light.fillArea,
+                    flexDirection: 'column',
+                    borderRadius: 4,
+                    margin: 2,
+                    maxHeight: Math.floor(props.store.dims.height/3),
+                    //alignItems: 'center',
+                } 
+                }>
+                    {
+                        GameStore.properties.flipMode._types.map(item => (
+                            <ModeItem modeName={item.value} store={props.store} key={item.value}/>
+                        ))
+                    }
+
+                </ScrollView>
+
+
+                <Text style={[styles.settingHeader]}>
+                    Difficulty
+                </Text>
+                <Text style={[styles.settingDescription]}>
+                    How perplexing the solution do you want to be?
+                </Text>
+                <View style={[styles.horizontalLine]}/>
+                <Text style={[styles.settingHeader]}>
+                    Tile Count
+                </Text> 
+                <Text style={[styles.settingDescription]}>
+                    How many tiles do you want to appear in your screen?
+                </Text>
+                <View style={[styles.horizontalLine]}/>
+            </View>
     </View>
 )); 

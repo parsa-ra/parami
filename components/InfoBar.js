@@ -22,12 +22,12 @@ export const InfoBar = observer((props)=>(
                 borderRadius: 4,
                 padding:10,
                 margin:10,
+                adjustsFontSizeToFit: true 
             }}>
                 <Text style={{
                     fontSize: 20,
                     color: colors.light.textColor,
                     padding: 5,
-                    adjustsFontSizeToFit: true 
                 }}>
                     Reset
                 </Text>
@@ -37,13 +37,13 @@ export const InfoBar = observer((props)=>(
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
+        adjustsFontSizeToFit: true,
         padding: 10}}>
         <Text style={{
             color: colors.light.textFillAreaColor,
             fontSize: 20,
             textAlign: 'center',
-            flexWrap: 'wrap',
-            adjustsFontSizeToFit: true, 
+            flexWrap: 'wrap', 
         }}> Moves: {props.store.movesCount} </Text>
       </View><TouchableHighlight onPress={()=>{props.store.setUpNewGame()}}> 
             <View style={{
@@ -51,12 +51,12 @@ export const InfoBar = observer((props)=>(
                 borderRadius: 4,
                 padding:10,
                 margin:10,
+                adjustsFontSizeToFit: true, 
             }}>
                 <Text style={{
                     fontSize: 20,
                     color: colors.light.textColor,
                     padding: 5,
-                    adjustsFontSizeToFit: true, 
                 }}>
                     New Game
                 </Text>
