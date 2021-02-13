@@ -2,6 +2,7 @@ import React from "react"
 import {types, cast} from "mobx-state-tree"
 import {window, screen} from "../env" 
 import {colors} from "../Functions/Utils"
+import {tileMargin} from "../env" ; 
 //import { string } from "mobx-state-tree/dist/internal";
 
 
@@ -176,9 +177,8 @@ export const GameStore = types.model({
             return true ; 
         },
         get tileSize(){
-            const margin = 50 ; 
-            const w =  Math.floor((self.dims.width-margin)/ self.widthTileNum) ;
-            const h =  Math.floor((self.dims.height-margin)/ self.heightTileNum) ;  
+            const w =  Math.floor((self.dims.width-tileMargin*(2*self.widthTileNum+2))/ self.widthTileNum) ;
+            const h =  Math.floor((self.dims.height-tileMargin*(2*self.heightTileNum+2))/ self.heightTileNum) ;  
             return w>h ? h : w ;
         }
     }

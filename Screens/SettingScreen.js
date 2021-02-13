@@ -153,7 +153,14 @@ export const SettingScreen = observer((props)=>(
             <ScrollView style={{
                 flex: 1,
                 flexDirection: 'column',
+                margin: 10,
             }}>
+
+            <Text style={[styles.settingDescription]}>
+                    By creating a New Game from Home Screen your settings will be applied automatically.
+            </Text>
+
+
             <Text style={[styles.settingHeader]}>
                     Modes
                 </Text>

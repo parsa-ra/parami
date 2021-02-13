@@ -63,7 +63,7 @@ export const HomeScreen = observer((props)=>(
                             color: colors.light.textColor,
                         }
                     ]}>
-                        Pick Were You Left
+                        Pick Where You Left
                     </Text>
                 </TouchableHighlight>
             </View>

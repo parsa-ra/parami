@@ -6,3 +6,4 @@ export const appName = "app" ;
 
 export const gameName = "Parami" ; 
 export const version = "0.5" ; 
+export const tileMargin = 4 ; 
