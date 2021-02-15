@@ -4,6 +4,7 @@ import {View, Text, TouchableHighlight} from "react-native" ;
 import {colors, textStyle} from "../styles/styles" ; 
 import {gameName, version} from "../env" ; 
 import { applySnapshot, getSnapshot } from "mobx-state-tree";
+import {ConversationModal} from "../components/Modals" ; 
 
 export const HomeScreen = observer((props)=>(
     <View style={{
@@ -21,7 +22,9 @@ export const HomeScreen = observer((props)=>(
              Logo {"\n"}
              {gameName}
         </Text>
-
+     
+        <ConversationModal rootStore={props.rootStore} store={props.store} />
+        
         <View style={{
             alignItems: 'stretch',
         }}>
@@ -92,7 +95,7 @@ export const HomeScreen = observer((props)=>(
         }}>
             <Text style={{
                 fontSize: 10,
-                color: "#dedede",
+                color: colors.light.textFillAreaLightest,
                 textAlign: 'center'
             }}>
                 Parami®{"\n"} Version: {version} 

@@ -40,8 +40,13 @@ export const GameStore = types.model({
     edgeHandling: types.enumeration(['None']), // How edges in flipping handled
     gameStatus: types.enumeration(['done', 'notdone']),
     gameSolution: types.array(types.number),
+    initialSolution: types.array(types.number),
 
     difficulty: types.enumeration(['Easy', 'Medium', 'Hard']),
+
+    resetHitCount: types.optional(types.number, 0),
+    enableSolution: types.optional(types.boolean, true),
+    viewSolution: types.optional(types.boolean, false),
 
     //////////////////
     // General States
@@ -78,7 +83,7 @@ export const GameStore = types.model({
                 const NewCoord = [PervCoord[0]+elem[0], PervCoord[1]+elem[1]]
                 if(NewCoord[0] >= 0 && NewCoord[0] < self.widthTileNum && NewCoord[1] >=0 && NewCoord[1] < self.heightTileNum){
                     const idx = tileIndex + elem[0] + elem[1]*self.widthTileNum ; 
-                    console.log(idx) ; 
+                    //console.log(idx) ; 
                     self.flipSpecificTile(idx, performOnTiles) ; 
                 }
             });
@@ -99,6 +104,25 @@ export const GameStore = types.model({
             self.heightTileNum = value ;
         }else{
             console.warn("Unexpected Dimensional Value") ;
+        }
+    },
+    onTileClicked(idx){
+        // if(self.viewSolution){
+        //     //TODO: Must be replaced with something else for performance concerns.
+        //     if(!(self.gameSolution.toJSON().includes(idx))){
+        //         // //TODO: Display some cools things to user ... for example, "At least try a bit ... "
+        //         self.gameSolution.push(idx) ;
+        //     }
+        // }
+
+        // Maybe in some features mode the state isn't reversible meaning when you double flip a tile the state wouldn't be the same as before flipping
+
+        // TODO: Notify user in first few times that the solution is shown for current table in it's current state, if you want to see the solution for the original table just reset the table and then click on the view solution button. 
+        if(self.gameSolution.toJSON().includes(idx)){
+            // //TODO: Display some cools things to user ... for example, "At least try a bit ... "
+            self.gameSolution.splice(self.gameSolution.indexOf(idx), 1) ; 
+        }else{
+            self.gameSolution.push(idx) ;
         }
     }
     ,
@@ -121,6 +145,7 @@ export const GameStore = types.model({
         self.flipMode = mode ; 
     },
     setTileColors(colors=null){
+        self.viewSolution = false ;
         if(colors){
             self.tileColors = colors ;
         }else{
@@ -132,30 +157,73 @@ export const GameStore = types.model({
                 self.tileColors[i] = self.initialState[i] ; 
             }
             self.gameStatus = 'notdone' ; 
+            console.log(self.initialSolution) ; 
+            self.gameSolution = cast(self.initialSolution.toJSON()) ; 
             self.movesCount = 0 ; 
         }
     },
+    resetSolution(){
+        self.viewSolution = false ; 
+        self.resetHitCount = 0 ; 
+    },
     setUpNewGame(){
-        const possibleColors = colors() ; 
-        self.possibleColors = [possibleColors[0], possibleColors[1]] ; 
+        let conditionIterationNewGame = 1 ; 
+        self.resetSolution() ; 
+    
+        while(true){ // Iteration over Satisfying Game Condition ... 
+            var possibleColors = colors() ; 
+            self.possibleColors = [possibleColors[0], possibleColors[1]] ; 
 
-        //TODO: Mapping between hardness to random flippings
-        const randomFlipNumber = Math.floor(Math.random()*(self.tileNum/2)) + 3 ;
+            //TODO: Mapping between Difficulty to random flippings
+            var randomFlipNumber = Math.floor(Math.random()*(self.tileNum/2)) + 3 ;
 
-        // reset solution 
-        self.gameSolution.clear() ; 
-        for(var i=0; i< self.widthTileNum*self.heightTileNum; i++){
-            self.initialState[i] = possibleColors[0]
-        } 
-        for(let i=0; i<randomFlipNumber; i++){
-            let toBeFlipIDX = Math.floor(Math.random() * self.tileNum);
-            self.gameSolution.push(toBeFlipIDX) ; 
-            self.flipTiles(toBeFlipIDX, false) ; 
+            // reset solution 
+            self.gameSolution.clear() ; 
+            for(var i=0; i< self.widthTileNum*self.heightTileNum; i++){
+                self.initialState[i] = possibleColors[0]
+            } 
+            for(let i=0; i<randomFlipNumber; i++){
+                let toBeFlipIDX = Math.floor(Math.random() * self.tileNum);
+                self.gameSolution.push(toBeFlipIDX) ; 
+                self.flipTiles(toBeFlipIDX, false) ; 
+            }
+
+            // Counting Appearance of each file number
+            var eachTileFlipCount = {} ; 
+            for(let i=0; i<self.gameSolution.length ; i++){
+                if(eachTileFlipCount[self.gameSolution[i]]){
+                    eachTileFlipCount[self.gameSolution[i]] += 1 ;
+                }else{
+                    eachTileFlipCount[self.gameSolution[i]] = 1 ;
+                }
+            }
+            
+            self.gameSolution = [] ; 
+            for(let key in eachTileFlipCount){
+                if(eachTileFlipCount[key] % 2 == 1){
+                    self.gameSolution.push(Number(key)) ; 
+                }
+            }
+            // Making Sure Something Flipped
+            if(self.gameSolution.length != 0){
+                console.log(`New Game Condition Reached After ${conditionIterationNewGame} Trials`) ; 
+                break; 
+            }else{
+                conditionIterationNewGame += 1 ; 
+            }
         }
+
+        self.initialSolution = cast(self.gameSolution.toJSON()) ;
         self.setTileColors() ;  
         self.goodEndFlipCount = randomFlipNumber ;    
+    },
+    setResetHitCount(value){
+        self.resetHitCount = value ; 
+    },
+    toggleViewSolution(){
+        self.viewSolution = !self.viewSolution ; 
     }
-    }
+}
 }).views((self) => {
         return{
         get tileNum(){
@@ -178,8 +246,14 @@ export const GameStore = types.model({
         },
         get tileSize(){
             const w =  Math.floor((self.dims.width-tileMargin*(2*self.widthTileNum+2))/ self.widthTileNum) ;
-            const h =  Math.floor((self.dims.height-tileMargin*(2*self.heightTileNum+2))/ self.heightTileNum) ;  
+            const h =  Math.floor((self.dims.height*(2/3)-tileMargin*(2*self.heightTileNum+2))/ self.heightTileNum) ;  
             return w>h ? h : w ;
+        },
+        get viewSolutionControl(){
+            if(self.enableSolution && self.resetHitCount >= 3){
+                return true;
+            }
+            return false; 
         }
     }
 }) ; 

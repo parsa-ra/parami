@@ -5,5 +5,5 @@ export const screen = Dimensions.get('screen') ;
 export const appName = "app" ; 
 
 export const gameName = "Parami" ; 
-export const version = "0.5" ; 
-export const tileMargin = 4 ; 
+export const version = "0.6" ; 
+export const tileMargin = 4 ;   

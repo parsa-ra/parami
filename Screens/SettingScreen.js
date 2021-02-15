@@ -1,9 +1,10 @@
 import React from "react" ; 
 import {observer} from "mobx-react-lite" ;
-import {View, Text, TouchableHighlight, ScrollView, StyleSheet, StatusBar} from "react-native" ; 
+import {View, Text, TouchableHighlight, ScrollView, StyleSheet, StatusBarm, Image} from "react-native" ; 
 import {NavBar} from "../components/NavBar" ; 
 import {colors} from "../styles/styles" ; 
 import {GameStore} from "../models/GameStore"
+
 
 const styles = StyleSheet.create({
     settingHeader:{
@@ -23,6 +24,15 @@ const styles = StyleSheet.create({
         margin: 2, 
     }
 })
+
+const modeDescription = (modeName) => {
+    switch(modeName){
+        case '4':
+            return "All tiles in plus like shape will be flipped" ; 
+        case '8':
+            return "All tiles in surrounding square will be flipped"
+    }
+}
 
 const ControlButt = observer((props)=>(
     <TouchableHighlight style={{
@@ -46,6 +56,20 @@ const ControlButt = observer((props)=>(
         </View> 
     </TouchableHighlight>
 )) ; 
+
+// const modeNames = {
+//     '4':"../assets/4.gif" ,  
+//     '8':"../assets/8.gif" 
+// } 
+
+const modeNames = (modeName)=>{
+    switch(modeName){
+        case '4':
+            return "../assets/4.gif" ;
+        case '8':
+            return "../assets/8.gif" ; 
+    }
+}
 
 const ValueController = observer((props)=>(
     <View style={
@@ -87,29 +111,82 @@ const ValueController = observer((props)=>(
 
 ));
 
+const ImageModeItem = (props) => {
+    console.log(typeof props.modeName) ; 
+    console.log(props.modeName == "8") ;
+    switch(props.modeName){
+        case props.modeName == "4":
+            return <Image source={require(`../assets/4.gif`)} style={{
+                width: 50,
+                height: 50,
+                resizeMode: 'cover',
+            }}/>
+        case props.modeName == "8":
+            return <Image source={require(`../assets/8.gif`)} style={{
+                width: 50,
+                height: 50,
+                resizeMode: 'cover',
+            }}/>
+    }
+    return <Image source={require(`../assets/8.gif`)} style={{
+        width: 50,
+        height: 50,
+        resizeMode: 'cover',
+    }}/>
+}
+
 const ModeItem = observer((props)=>(
     <TouchableHighlight style={{
         alignItems: 'center',
+        flexDirection: 'row',
+        margin: 4, 
+        backgroundColor: colors.light.fillArea ,
+        borderRadius: 5,
+        borderColor: props.modeName == props.store.flipMode ? colors.light.primary : colors.light.fillAreaDark,
+        borderWidth: props.modeName == props.store.flipMode ? 3 : 0,
+        justifyContent: 'flex-start',
     }}
     onPress={()=>props.store.setFlipMode(props.modeName)}>
-        <View style={
-            {margin: 2, 
-            backgroundColor: colors.light.fillArea ,
-            borderRadius: 5,
-            borderColor: props.modeName == props.store.flipMode ? colors.light.primary : colors.light.fillAreaDark,
-            borderWidth: props.modeName == props.store.flipMode ? 3 : 0
+        <View style={{
+            flexDirection: 'row',
+            margin: 5, 
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            flexWrap: 'wrap', 
+            padding: 5,
         }
         }>
-            <Text style={{
-                fontSize: 15, 
-                color: props.modeName == props.store.flipMode ? colors.light.primary : colors.light.textFillAreaLightest,
-                textAlign: 'center',
-                padding: 10, 
-            }}>
-                {props.modeName} {"\n"}
-                Image + Description
+            {/* <ImageModeItem modeName={props.modeName}/> */}
+            {
+                props.modeName == '4' ? 
+                <Image source={require(`../assets/4.gif`)} style={{
+                    width: 50,
+                    height: 50,
+                    resizeMode: 'cover',
+                }}/> :
+                <Image source={require(`../assets/8.gif`)} style={{
+                    width: 50,
+                    height: 50,
+                    resizeMode: 'cover',
+                }}/>
 
-            </Text>
+            }
+
+            <View style={{
+                flexDirection: 'row',
+                flex:1
+            }}>
+                <Text style={{
+                    fontSize: 15, 
+                    color: props.modeName == props.store.flipMode ? colors.light.primary : colors.light.textFillAreaLightest,
+                    textAlign: 'left',
+                    padding: 10, 
+                    flexWrap: 'wrap',
+                }}>
+                    {props.modeName} {"\n"}
+                    {modeDescription(props.modeName)}
+                </Text>
+            </View>
         </View> 
     </TouchableHighlight>
 ));
@@ -176,6 +253,7 @@ export const SettingScreen = observer((props)=>(
                     borderRadius: 6,
                     margin: 4,
                     maxHeight: Math.floor(props.store.dims.height/3),
+                    padding: 5,
                     //alignItems: 'center',
                 } 
                 }>

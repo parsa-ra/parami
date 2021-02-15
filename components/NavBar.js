@@ -16,7 +16,8 @@ export const NavBar = observer((props)=>(
     // minHeight: 100,
     marginBottom: 10, 
     backgroundColor: colors.light.fillArea,
-    minWidth: props.store.tileSize * props.store.widthTileNum + 1,
+    alignSelf: 'stretch',
+    //minWidth: props.store.tileSize * props.store.widthTileNum + 1,
   }}>
     <TouchableHighlight style={{
     }} onPress={()=>props.rootStore.setNavStack('home')}>

@@ -1,10 +1,10 @@
-import React from "react" ; 
+import React, { useState } from "react" ; 
 import {observer} from "mobx-react-lite" ; 
 import { View, Text, Modal, TouchableHighlight } from "react-native";
 import {colors, textStyle} from "../styles/styles" ; 
+import { set } from "react-native-reanimated";
 
 
-const newLine = "~{'\n'}"
 
 const NotificationConstructor = (props) => {
     if(props.playerMoveCount > props.goodEndFlipCount){
@@ -28,6 +28,33 @@ const NotificationConstructor = (props) => {
         {"\n"} Consider applying for NASA or something ...  </Text>             
     }
 }
+
+export const ConversationModal = observer((props)=>(
+    (
+        props.rootStore.messageView  ? 
+    <View style={{
+            position: 'absolute',
+            top: 20,
+            left: 20,
+            right: 20, 
+            backgroundColor: colors.light.message.critical ,
+            borderRadius: 4,
+            padding: 10, 
+            flexWrap: 'wrap',
+
+        }}>
+
+            <Text style={{
+                color: colors.light.textFillAreaColor,
+
+            }}>
+                {props.rootStore.notificationQueue[0].message}
+            </Text>
+        </View>
+        :
+    null)
+
+));
 
 export const GameScreenModal = observer((props)=>(
     props.store.gameStatus == 'done' ? 
@@ -61,7 +88,8 @@ export const GameScreenModal = observer((props)=>(
                       adjustsFontSizeToFit: true 
                       }}>
 
-            <NotificationConstructor playerMoveCount={props.store.movesCount}  goodEndFlipCount={props.store.goodEndFlipCount}/>
+
+            <NotificationConstructor playerMoveCount={props.store.movesCount}  goodEndFlipCount={props.store.gameSolution.length}/>
 
 
             <View style={{
@@ -107,3 +135,5 @@ export const GameScreenModal = observer((props)=>(
     </View>
     : null 
 )); 
+
+

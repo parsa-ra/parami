@@ -17,3 +17,6 @@
 
 
 
+## Issues: 
+//TODO:
+* The fuck happens when the tile  arrangement became narrow .... 

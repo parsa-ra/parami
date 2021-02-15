@@ -1,24 +1,33 @@
-import {InfoBar, GameScreenModal, Tile, NavBar} from "../components/" ; 
+import {InfoBar,GameScreenModal, Tile, NavBar,ControlBar} from "../components/" ; 
 import React from "react" ; 
 import {observer} from "mobx-react-lite" ;
 import {View} from "react-native" ; 
 
 export const GameScreen = observer((props)=>(
     <View style={{
+      flexDirection: 'column',
       justifyContent: 'space-between',
-      alignItems: 'stretch', 
+      //alignItems: 'stretch', 
+      margin: 0,
+      padding: 0,
       flex: 1,
       //height: props.store.dims.height, // No effect ... 
     }}>
       <GameScreenModal store={props.store}/>
       <NavBar rootStore={props.rootStore} store={props.store}/>
+      <View style={
+        {flexDirection: 'column',
+         padding: 0,
+         margin: 0,
+        }}>
+        <InfoBar store={props.store} />
+        <ControlBar store={props.store}/>
+      </View>
       <View style={{
         justifyContent: 'center',
-        flex: 10,
         alignItems: 'center',
         marginBottom: 30,
-      }}>
-      <InfoBar store={props.store} />
+      }}> 
       {[...Array(props.store.heightTileNum).keys()].map(height_idx => (
         <View style={[
           {flexDirection: 'row'}
@@ -34,7 +43,6 @@ export const GameScreen = observer((props)=>(
       ))}
       </View>
       <View style={{
-        flex:1, 
       }}>
         
       </View>

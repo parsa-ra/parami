@@ -10,7 +10,12 @@ export const colors = {
         textFillAreaLight: '#868686' ,
         textFillAreaLightest: '#9a9a9a', 
         textColor: '#fefefe',
-        warningColor: '#ffcc00',
+        message:{
+            low: '#e6ffcc',
+            medium: '#ffefc2',
+            high: '#f5b958',
+            critical: '#ff4548',
+        }
     }
 }
 

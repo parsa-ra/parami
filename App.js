@@ -14,9 +14,9 @@ import { applySnapshot, getSnapshot, unprotect } from 'mobx-state-tree';
 
 const possibleColors = colors() ; 
 
-//TODO: Generate Some random tile counts 
-const width = 6 ;
-const height = 6 ;
+// Initial Tile Count 
+const width =  4;
+const height = 4 ;
 
 // TODO: Add Difficulty level dependent on number of random flips 
 const randomFlipNumber = Math.floor(Math.random()*4) + 1 ; // Number of flips //TODO:I think should depend to width and height of board.
@@ -42,6 +42,7 @@ const store = GameStore.create({
   goodEndFlipCount: randomFlipNumber, 
   gameStatus: 'notdone',
   gameSolution: [],
+  initialSolution: [],
   difficulty: 'Medium',
 }) ; 
 
@@ -59,13 +60,40 @@ const rootStore = RootStore.create({
     //toBeAppliedStore: {},
     navStack: [
        'home'
+    ],
+    notificationQueue: [
     ]
 }) ; 
 
 applySnapshot(rootStore.store, getSnapshot(store)) ; 
 applySnapshot(rootStore.toBeAppliedStore, getSnapshot(store)) ; 
 
+rootStore.setMessageView(true) ; 
+// autorun(()=>{
+//   console.log(rootStore.navStack.length) ; 
+//   rootStore.setMessageView(true) ; 
+// })
+
 autorun(()=>{
+  console.log(rootStore.messageView) ; 
+})
+
+autorun(()=>{
+  const a = rootStore.store.gameSolution.entries() ; 
+  const b = rootStore.store.gameSolution[0] ; 
+  console.log(b) ; 
+  console.log(b in rootStore.store.gameSolution.entries()) ; 
+  console.log(rootStore.store.gameSolution.keys()) ; 
+  console.log(b in rootStore.store.gameSolution.toJSON()) ; 
+})
+
+
+autorun(()=>{
+  if(rootStore.notificationQueue.length > 0){
+    setTimeout(()=>{
+      rootStore.setMessageView(false) ; 
+    }, 5000) ; 
+  }
   
 }) ; 
 

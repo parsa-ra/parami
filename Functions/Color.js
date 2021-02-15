@@ -26,3 +26,8 @@ export function HexColorDistance(col1, col2){
     return ((col1RGB[0]-col2RGB[0]) ** 2 + (col1RGB[1]-col2RGB[1])**2 + (col1RGB[2]-col2RGB[2])**2 )
 }
 
+export function HexChannelWiseDistance(col1, col2){
+    let col1RGB = Hex2RGB(col1) ;
+    let col2RGB = Hex2RGB(col2) ; 
+    return [Math.abs(col1RGB[0]-col2RGB[0]), Math.abs(col1RGB[1]-col2RGB[1]), Math.abs(col1RGB[2]-col2RGB[2])] ;
+}
