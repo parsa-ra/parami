@@ -170,12 +170,26 @@ export const GameStore = types.model({
         let conditionIterationNewGame = 1 ; 
         self.resetSolution() ; 
     
-        while(true){ // Iteration over Satisfying Game Condition ... 
-            var possibleColors = colors() ; 
-            self.possibleColors = [possibleColors[0], possibleColors[1]] ; 
+        var possibleColors = colors() ; 
+        self.possibleColors = [possibleColors[0], possibleColors[1]] ; 
+        while(true){ // Iteration over Satisfying Game Condition ...      
+            
+            //TODO: Add some sense to difficulty 
+            var flipRatio2TotalTile ; 
+            var minFlip2TotalTile ; 
+            switch(self.difficulty){
+                case 'Easy':
+                    flipRatio2TotalTile = (1/4) ; 
+                    minFlip2TotalTile = (1/8)
+                case 'Medium':
+                    flipRatio2TotalTile = (2/4) ; 
+                    minFlip2TotalTile = (2/8) ; 
+                case 'Hard' : 
+                    flipRatio2TotalTile = (3/4) ;
+                    minFlip2TotalTile = (3/8) 
 
-            //TODO: Mapping between Difficulty to random flippings
-            var randomFlipNumber = Math.floor(Math.random()*(self.tileNum/2)) + 3 ;
+            }
+            var randomFlipNumber = Math.floor(Math.random()*(self.tileNum * flipRatio2TotalTile) + self.tileNum * minFlip2TotalTile) ;
 
             // reset solution 
             self.gameSolution.clear() ; 
@@ -183,12 +197,12 @@ export const GameStore = types.model({
                 self.initialState[i] = possibleColors[0]
             } 
             for(let i=0; i<randomFlipNumber; i++){
-                let toBeFlipIDX = Math.floor(Math.random() * self.tileNum);
-                self.gameSolution.push(toBeFlipIDX) ; 
-                self.flipTiles(toBeFlipIDX, false) ; 
+                let toBeFlipIdx = Math.floor(Math.random() * self.tileNum);
+                self.gameSolution.push(toBeFlipIdx) ; 
+                self.flipTiles(toBeFlipIdx, false) ; 
             }
 
-            // Counting Appearance of each file number
+            // Counting Appearance of each tile number
             var eachTileFlipCount = {} ; 
             for(let i=0; i<self.gameSolution.length ; i++){
                 if(eachTileFlipCount[self.gameSolution[i]]){

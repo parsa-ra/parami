@@ -20,3 +20,5 @@
 ## Issues: 
 //TODO:
 * The fuck happens when the tile  arrangement became narrow .... 
+
+* Temporally resolved: We had to resize the default splash screen to avoid memory problem with JVM in some older devices: HTC10, Samsung Galaxy S6, Xiaomi mi 5T

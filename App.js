@@ -63,7 +63,7 @@ const rootStore = RootStore.create({
     ],
     notificationQueue: [
     ]
-}) ; 
+}) ;    
 
 applySnapshot(rootStore.store, getSnapshot(store)) ; 
 applySnapshot(rootStore.toBeAppliedStore, getSnapshot(store)) ; 
@@ -81,10 +81,10 @@ autorun(()=>{
 autorun(()=>{
   const a = rootStore.store.gameSolution.entries() ; 
   const b = rootStore.store.gameSolution[0] ; 
-  console.log(b) ; 
-  console.log(b in rootStore.store.gameSolution.entries()) ; 
-  console.log(rootStore.store.gameSolution.keys()) ; 
-  console.log(b in rootStore.store.gameSolution.toJSON()) ; 
+  //console.log(b) ; 
+  //console.log(b in rootStore.store.gameSolution.entries()) ; 
+  //console.log(rootStore.store.gameSolution.keys()) ; 
+  console.log(rootStore.store.gameSolution.toJSON()) ; 
 })
 
 
@@ -92,7 +92,7 @@ autorun(()=>{
   if(rootStore.notificationQueue.length > 0){
     setTimeout(()=>{
       rootStore.setMessageView(false) ; 
-    }, 5000) ; 
+    }, rootStore.notificationQueue[0].timeout) ; 
   }
   
 }) ; 

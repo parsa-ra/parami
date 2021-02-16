@@ -22,7 +22,7 @@ export const colors = {
 
 
 export const textStyle = {
-    fontSize: 25,
-    color: colors.light.textFillAreaColor,
+    fontSize: 20,
+    color: colors.light.textFillAreaLight,
     textAlign: 'center'
 }

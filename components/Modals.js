@@ -1,6 +1,6 @@
-import React, { useState } from "react" ; 
+import React, { useState, useEffect, useRef } from "react" ; 
 import {observer} from "mobx-react-lite" ; 
-import { View, Text, Modal, TouchableHighlight } from "react-native";
+import { Animated, View, Text, Modal, TouchableHighlight } from "react-native";
 import {colors, textStyle} from "../styles/styles" ; 
 import { set } from "react-native-reanimated";
 
@@ -29,32 +29,45 @@ const NotificationConstructor = (props) => {
     }
 }
 
-export const ConversationModal = observer((props)=>(
-    (
-        props.rootStore.messageView  ? 
-    <View style={{
+export const ConversationModal = observer((props)=>{
+    
+    const topPosition = useRef(new Animated.Value(-200)).current ; 
+
+    useEffect(()=>{
+        Animated.timing(
+            topPosition,
+            {
+                toValue: 20,
+                duration: 600,
+            }
+        ).start();
+    }, [topPosition]) ; 
+
+    return   props.rootStore.messageView  ? 
+    <Animated.View style={{
             position: 'absolute',
-            top: 20,
-            left: 20,
-            right: 20, 
+            top: topPosition,
+            left: 10,
+            right: 10, 
             backgroundColor: colors.light.message.critical ,
             borderRadius: 4,
             padding: 10, 
-            flexWrap: 'wrap',
-
+            flex: 1 ,
         }}>
 
             <Text style={{
                 color: colors.light.textFillAreaColor,
+                textAlign: 'left',
+                flexWrap: 'wrap',
+                fontSize: 20,
 
             }}>
                 {props.rootStore.notificationQueue[0].message}
             </Text>
-        </View>
+        </Animated.View>
         :
-    null)
-
-));
+    null
+});
 
 export const GameScreenModal = observer((props)=>(
     props.store.gameStatus == 'done' ? 
@@ -89,7 +102,7 @@ export const GameScreenModal = observer((props)=>(
                       }}>
 
 
-            <NotificationConstructor playerMoveCount={props.store.movesCount}  goodEndFlipCount={props.store.gameSolution.length}/>
+            <NotificationConstructor playerMoveCount={props.store.movesCount}  goodEndFlipCount={props.store.initialSolution.length} store={props.store}/>
 
 
             <View style={{
