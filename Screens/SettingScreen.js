@@ -37,15 +37,15 @@ const modeDescription = (modeName) => {
 const ControlButt = observer((props)=>(
     <TouchableHighlight style={{
         flex:1,
-        margin: 10,
-        borderColor: colors.light.fillAreaDark,
-        borderWidth: 5,
-        backgroundColor: colors.light.fillArea,
-        borderRadius: 5, 
     }}
     onPress={()=>{props.store.setTileCount(props.ident, props.value)}}>
         <View style={{
             justifyContent: 'center',
+            borderColor: colors.light.fillAreaDark,
+            borderWidth: 5,
+            backgroundColor: colors.light.fillArea,
+            borderRadius: 10, 
+            margin: 10,
         }}>
             <Text style={{
                 fontSize: 20,
@@ -81,6 +81,7 @@ const ValueController = observer((props)=>(
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 6,
+            padding: 5,
         }
     }>
         <Text style={{
@@ -92,10 +93,18 @@ const ValueController = observer((props)=>(
             {props.name} : 
         </Text>
 
+        <View style={{
+            flex:1,
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            justifyContent: 'center',
+        }}>
         <ControlButt store={props.store} displayText="-" ident={props.ident} value={props.value-1}/>
 
         <View style={{
-            flex:2,
+            flex:1,
+            alignItems: 'center',
+            justifyContent: 'center',
         }}>
             <Text style={{
                 textAlign: 'center',
@@ -106,6 +115,7 @@ const ValueController = observer((props)=>(
         </View>
 
         <ControlButt store={props.store} displayText="+" ident={props.ident} value={props.value+1}/>
+        </View>
 
     </View>
 

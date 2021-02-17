@@ -1,4 +1,4 @@
-export const colors = {
+const colors = {
     light: {
         primary: '#327191',
         secondary: '#229476',
@@ -10,7 +10,6 @@ export const colors = {
         textFillAreaLight: '#868686' ,
         textFillAreaLightest: '#9a9a9a', 
         textColor: '#fefefe',
-        info: '#f5b958',
         message:{
             error: {
                 medium: '#ffefc2',
@@ -28,10 +27,10 @@ export const colors = {
     }
 }
 
-
-
-export const textStyle = {
-    fontSize: 20,
-    color: colors.light.textFillAreaLight,
-    textAlign: 'center'
+var test = [] ; 
+for(var mc in colors.light.message){
+    for(var typec in colors.light.message[mc]){
+        test.push(mc + '.' +typec) ; 
+    }
 }
+console.log(test) ; 

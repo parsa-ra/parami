@@ -7,7 +7,7 @@ import {RootStore} from "./models/RootStore" ;
 import {HomeScreen, GameScreen, SettingScreen} from "./Screens"; 
 import {window, screen} from "./env" ;
 import {autorun} from "mobx" 
-import {colors} from "./Functions/Utils" ;
+import {colors, timeout} from "./Functions/Utils" ;
 
 import {observer} from "mobx-react-lite" ; 
 import { applySnapshot, getSnapshot, unprotect } from 'mobx-state-tree';
@@ -37,7 +37,7 @@ const store = GameStore.create({
   widthTileNum: width,
   heightTileNum: height,
   edgeHandling: 'None',
-  initialState: initialTileColors,
+  initialState: initialTileColors,  
   tileColors: initialTileColors,
   goodEndFlipCount: randomFlipNumber, 
   gameStatus: 'notdone',
@@ -69,33 +69,47 @@ applySnapshot(rootStore.store, getSnapshot(store)) ;
 applySnapshot(rootStore.toBeAppliedStore, getSnapshot(store)) ; 
 
 rootStore.setMessageView(true) ; 
-// autorun(()=>{
-//   console.log(rootStore.navStack.length) ; 
-//   rootStore.setMessageView(true) ; 
-// })
+
 
 autorun(()=>{
   console.log(rootStore.messageView) ; 
 })
 
-autorun(()=>{
-  const a = rootStore.store.gameSolution.entries() ; 
-  const b = rootStore.store.gameSolution[0] ; 
-  //console.log(b) ; 
-  //console.log(b in rootStore.store.gameSolution.entries()) ; 
-  //console.log(rootStore.store.gameSolution.keys()) ; 
-  console.log(rootStore.store.gameSolution.toJSON()) ; 
-})
-
-
-autorun(()=>{
-  if(rootStore.notificationQueue.length > 0){
-    setTimeout(()=>{
-      rootStore.setMessageView(false) ; 
-    }, rootStore.notificationQueue[0].timeout) ; 
+rootStore.pushToNotificationQueue(
+  {
+    'message' : 'Hello World',
+    'screen': 'home',
+    'timeout': 4000, 
+    'type': 'tip.normal',
   }
-  
-}) ; 
+)
+
+// // // Handling the notification.
+// autorun(() => {
+//   if(rootStore.notificationQueue.length > 0){
+
+//       var toDisplayIdx = [];
+//       for(let i=0; i<rootStore.notificationQueue.length ; i++ ){ 
+//         if(rootStore.notificationQueue[i].screen == rootStore.navStack[rootStore.navStack.length -1]){
+//           toDisplayIdx.push(i) ; 
+//         }
+//       }
+      
+//       console.log(toDisplayIdx) ; 
+//       if(toDisplayIdx.length){
+//       // Most recent relevant notification.
+//       // console.log(rootStore, toDisplayIdx.length) ; 
+//       rootStore.setMessageView(true) ;
+//       rootStore.setCurrentNotificationIdx(toDisplayIdx.length -1) ; 
+
+//       timeout(rootStore.notificationQueue[toDisplayIdx[toDisplayIdx.length-1]].timeout).then(()=>{
+//         rootStore.setMessageView(false)
+//       });
+
+//     }
+//   }
+// }) ; 
+
 
 const Navigator = observer((props)=>{
     switch(props.rootStore.lastNavEntry){

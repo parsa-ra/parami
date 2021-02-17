@@ -9,7 +9,7 @@ export const colors = (method="perChannel") => {
     var color2 = HexRandColor() ; 
     var trials = 1 ; 
     while(true){
-        //var trials = 1 ; 
+        //var trials = 1 ; messageView
 
         if(method == "perChannel"){
             // Not more than 2 channel have the same distance, this will mimic the Value in HSV color system
@@ -44,3 +44,12 @@ export const colors = (method="perChannel") => {
     }
     return [color1, color2]
 }
+
+
+//TODO: Replace Math.round() with something like "Mersenne Twister" 
+export const uniformIntTo = (limit) => {
+    return Math.floor(Math.random()*limit) ; 
+}
+
+
+export const timeout = (ms) => {return new Promise(resolve => setTimeout(resolve, ms))} ; 

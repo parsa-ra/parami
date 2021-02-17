@@ -16,6 +16,9 @@
 * Install using `npm install` after you pulled the repository, Then just run `expo start --web` to start web session. 
 
 
+## Some Clarification
+* The basics of notificationHandling is accomplished in this commit, when something is pushed to the `notificationQueue` or `navStack` changed relevant notification's will appear if any ... 
+* 
 
 ## Issues: 
 //TODO:

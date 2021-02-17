@@ -2,11 +2,25 @@ import React, { useState, useEffect, useRef } from "react" ;
 import {observer} from "mobx-react-lite" ; 
 import { Animated, View, Text, Modal, TouchableHighlight } from "react-native";
 import {colors, textStyle} from "../styles/styles" ; 
+import { uniformIntTo} from "../Functions/Utils" ; 
 import { set } from "react-native-reanimated";
 
-
+const messagesWhenSolutionIsOn = [
+    "Don't Worry You'll Solve it Next Time ... ", 
+    "You'll be a Parami Master in no Time ... ",
+    //TODO: Add other things.
+]
 
 const NotificationConstructor = (props) => {
+    if(props.store.viewSolution){
+        return <Text  
+        style={{
+            ...textStyle
+        }}>
+            {messagesWhenSolutionIsOn[uniformIntTo(messagesWhenSolutionIsOn.length)]}  
+        </Text>
+    }
+    else{
     if(props.playerMoveCount > props.goodEndFlipCount){
         return <Text 
         style={{
@@ -28,10 +42,13 @@ const NotificationConstructor = (props) => {
         {"\n"} Consider applying for NASA or something ...  </Text>             
     }
 }
+}
+
 
 export const ConversationModal = observer((props)=>{
-    
+
     const topPosition = useRef(new Animated.Value(-200)).current ; 
+    const colorHierarchy = props.rootStore.notificationQueue[props.rootStore.currentNotificationIdx].type.split('.') ; 
 
     useEffect(()=>{
         Animated.timing(
@@ -43,17 +60,18 @@ export const ConversationModal = observer((props)=>{
         ).start();
     }, [topPosition]) ; 
 
-    return   props.rootStore.messageView  ? 
-    <Animated.View style={{
+    return props.rootStore.messageView ?  
+            <Animated.View style={{
             position: 'absolute',
+            zIndex: 1,
             top: topPosition,
             left: 10,
             right: 10, 
-            backgroundColor: colors.light.message.critical ,
+            backgroundColor: colors.light.message[colorHierarchy[0]][colorHierarchy[1]] ,
             borderRadius: 4,
             padding: 10, 
             flex: 1 ,
-        }}>
+            }}>
 
             <Text style={{
                 color: colors.light.textFillAreaColor,
@@ -62,17 +80,22 @@ export const ConversationModal = observer((props)=>{
                 fontSize: 20,
 
             }}>
-                {props.rootStore.notificationQueue[0].message}
+                {props.rootStore.notificationQueue[props.rootStore.currentNotificationIdx].message}
             </Text>
-        </Animated.View>
-        :
+
+    </Animated.View>
+    :
     null
 });
+
+
+
+
 
 export const GameScreenModal = observer((props)=>(
     props.store.gameStatus == 'done' ? 
     <View style={{
-        zIndex: 1,
+        zIndex: 2,
         position: 'absolute',
         left: 0,
         right: 0 ,
@@ -82,7 +105,7 @@ export const GameScreenModal = observer((props)=>(
     }}>
     <View
             style={{
-                zIndex: 2,
+                zIndex: 3,
                 backgroundColor: colors.light.fillArea,
                 position: 'absolute',
                 left: 5, 
@@ -91,8 +114,6 @@ export const GameScreenModal = observer((props)=>(
                 right: 5,
                 padding: 20,
                 borderRadius: 4, 
-                // borderColor: '#aeaeee',
-                // borderWidth: 3
             }}>
         <View style={{flex:1,
                       flexDirection: 'column',

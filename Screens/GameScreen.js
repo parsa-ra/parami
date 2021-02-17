@@ -1,4 +1,4 @@
-import {InfoBar,GameScreenModal, Tile, NavBar,ControlBar} from "../components/" ; 
+import {InfoBar,GameScreenModal, Tile, NavBar,ControlBar, ConversationModal} from "../components/" ; 
 import React from "react" ; 
 import {observer} from "mobx-react-lite" ;
 import {View} from "react-native" ; 
@@ -13,6 +13,9 @@ export const GameScreen = observer((props)=>(
       flex: 1,
       //height: props.store.dims.height, // No effect ... 
     }}>
+      
+      <ConversationModal store={props.store} rootStore={props.rootStore}/>
+
       <GameScreenModal store={props.store}/>
       <NavBar rootStore={props.rootStore} store={props.store}/>
       <View style={
@@ -21,7 +24,7 @@ export const GameScreen = observer((props)=>(
          margin: 0,
         }}>
         <InfoBar store={props.store} />
-        <ControlBar store={props.store}/>
+        <ControlBar store={props.store} rootStore={props.rootStore}/>
       </View>
       <View style={{
         justifyContent: 'center',

@@ -3,6 +3,8 @@ import {observer} from "mobx-react-lite" ;
 import { View, Text, TouchableHighlight} from "react-native";
 import {colors} from "../styles/styles" ; 
 
+import {messages} from "../components/Messages"
+
 
 export const ControlBar = observer((props)=>(
     <View style={{
@@ -25,7 +27,7 @@ export const ControlBar = observer((props)=>(
         <TouchableHighlight onPress={()=>{ props.store.toggleViewSolution() 
                                             }}> 
                     <View style={{
-                        backgroundColor: colors.light.message.high,
+                        backgroundColor: colors.light.info,
                         borderRadius: 4,
                         padding:10,
                         margin:10,
@@ -45,6 +47,12 @@ export const ControlBar = observer((props)=>(
         }
 
         <TouchableHighlight onPress={()=>{props.store.setTileColors() ;
+                                          props.rootStore.pushToNotificationQueue({
+                                            'message' : messages.gameScreen.resetWithoutTrial[0],
+                                            'screen': 'game',
+                                            'timeout': 6000, 
+                                            'type': 'tip.normal',
+                                          })
                                           props.store.setResetHitCount(props.store.resetHitCount+1)}}> 
             <View style={{
                 backgroundColor: colors.light.secondary,

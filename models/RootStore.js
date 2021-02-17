@@ -1,16 +1,26 @@
-import {applySnapshot, getSnapshot, types} from "mobx-state-tree" ; 
+import {applySnapshot, getSnapshot, types, flow} from "mobx-state-tree" ; 
 import React from "react"  ;
 import {values} from "mobx" ; 
 import {GameStore} from "./GameStore" ; 
+import {colors} from "../styles/styles" ; 
+import {screens} from "../Screens" ; 
+import {timeout} from "../Functions/Utils"
 
+const seperator = '.' 
+const notificationColors =[]  ; 
+for(var typeCat in colors.light.message){
+    for(var catColor in colors.light.message[typeCat] ){
+        notificationColors.push(typeCat + seperator + catColor) ; 
+    }
+} 
 // Overall Game State 
 // TODO: This should be loaded each time game starts up
 
 export const ModalNotification = types.model({
-    severity: types.enumeration(['low','medium', 'high', 'critical']),
+    type: types.enumeration(notificationColors),
     message: types.string,
     timeout: types.optional(types.number, 1000),
-    screen: types.string, 
+    screen: types.enumeration(screens), 
 }) 
 
 const GameStoreDefaultValues = {
@@ -43,12 +53,20 @@ export const RootStore = types.model({
 
     // Experimental 
     notificationQueue: types.array(ModalNotification),
-    messageView: types.optional(types.boolean, false) ,
-
+    messageView: types.optional(types.boolean, false),
+    viewClosePending: types.optional(types.boolean, false),
+    currentNotificationIdx: types.optional(types.number, 0),
+    
 }).actions((self)=>{
+    let viewTimeOut ; 
     return{
         setNavStack(screen){
+            self.messageView = false ;
             self.navStack.push(screen) ; 
+            // Check, if to display any new notification
+            viewTimeOut = self.checkNotificationView();
+            console.log(viewTimeOut) ; 
+            viewTimeOut.then(() => {self.setMessageView(false)}) ; 
         },
         setStore(store){
             applySnapshot(self.store, getSnapshot(store)) ;  
@@ -57,14 +75,42 @@ export const RootStore = types.model({
             self.toBeAppliedStore = store ; 
         },
         setMessageView(messageView){
-            self.notificationQueue.push({
-                severity: 'high',
-                message: 'Testing Modal View, This is some relatively long text to see what will happens to the container in many different scenarios.',
-                timeout: 2000,
-                screen: 'home', 
-            });
             self.messageView = messageView ; 
-        }
+        },
+        setCurrentNotificationIdx(Idx){
+            self.setCurrentNotificationIdx = Idx ; 
+        },
+        pushToNotificationQueue(notification){ 
+            self.messageView = false ;  
+            self.notificationQueue.push(notification) ; 
+        
+            // Check, if to display any new notification 
+            viewTimeOut = self.checkNotificationView();
+            viewTimeOut.then(()=>{ self.setMessageView(false)}) ; 
+            
+        },
+        checkNotificationView: flow(function* checkNotificationView(){
+            if(self.notificationQueue.length > 0){
+
+                var toDisplayIdx = [];
+                for(let i=0; i<self.notificationQueue.length ; i++ ){ 
+                  if(self.notificationQueue[i].screen == self.navStack[self.navStack.length -1]){
+                    toDisplayIdx.push(i) ; 
+                  }
+                }
+                
+                if(toDisplayIdx.length > 0){
+                    // Display most recent notification 
+                    // TODO: maybe we must change it ? 
+                    self.messageView = true ;
+
+                    self.currentNotificationIdx = toDisplayIdx[toDisplayIdx.length - 1 ] ;
+
+                    yield timeout(self.notificationQueue[self.currentNotificationIdx].timeout)
+                }
+   
+            }
+        }),
     }
 }).views((self)=>{
     return{

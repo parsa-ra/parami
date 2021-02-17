@@ -24,7 +24,7 @@ export const HomeScreen = observer((props)=>(
         </Text>
      
         <ConversationModal rootStore={props.rootStore} store={props.store} />
-        
+
         <View style={{
             alignItems: 'stretch',
         }}>
