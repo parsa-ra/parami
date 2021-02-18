@@ -46,14 +46,10 @@ export const ControlBar = observer((props)=>(
         null 
         }
 
-        <TouchableHighlight onPress={()=>{props.store.setTileColors() ;
-                                          props.rootStore.pushToNotificationQueue({
-                                            'message' : messages.gameScreen.resetWithoutTrial[0],
-                                            'screen': 'game',
-                                            'timeout': 6000, 
-                                            'type': 'tip.normal',
-                                          })
-                                          props.store.setResetHitCount(props.store.resetHitCount+1)}}> 
+        <TouchableHighlight onPress={()=>{
+            props.store.setResetHitCount(props.store.resetHitCount+1)
+            props.store.setTileColors() ;
+            }}> 
             <View style={{
                 backgroundColor: colors.light.secondary,
                 borderRadius: 4,

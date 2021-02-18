@@ -14,8 +14,10 @@ export const GameScreen = observer((props)=>(
       //height: props.store.dims.height, // No effect ... 
     }}>
       
+      { props.rootStore.messageView &&
       <ConversationModal store={props.store} rootStore={props.rootStore}/>
-
+      }
+      
       <GameScreenModal store={props.store}/>
       <NavBar rootStore={props.rootStore} store={props.store}/>
       <View style={

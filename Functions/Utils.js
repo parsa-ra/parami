@@ -52,4 +52,6 @@ export const uniformIntTo = (limit) => {
 }
 
 
-export const timeout = (ms) => {return new Promise(resolve => setTimeout(resolve, ms))} ; 
+export const timeout = (ms, timeOutHandler) => {return new Promise((resolve, reject) => {
+    timeOutHandler = setTimeout(resolve, ms)
+})} ; 

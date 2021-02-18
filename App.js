@@ -7,10 +7,12 @@ import {RootStore} from "./models/RootStore" ;
 import {HomeScreen, GameScreen, SettingScreen} from "./Screens"; 
 import {window, screen} from "./env" ;
 import {autorun} from "mobx" 
-import {colors, timeout} from "./Functions/Utils" ;
+import {colors, timeout, uniformIntTo} from "./Functions/Utils" ;
 
 import {observer} from "mobx-react-lite" ; 
 import { applySnapshot, getSnapshot, unprotect } from 'mobx-state-tree';
+
+import {messages} from "./components/Messages" ; 
 
 const possibleColors = colors() ; 
 
@@ -77,7 +79,7 @@ autorun(()=>{
 
 rootStore.pushToNotificationQueue(
   {
-    'message' : 'Hello World',
+    'message' : 'Welcome Back ... ',
     'screen': 'home',
     'timeout': 4000, 
     'type': 'tip.normal',
@@ -109,6 +111,19 @@ rootStore.pushToNotificationQueue(
 //     }
 //   }
 // }) ; 
+
+autorun(()=>{
+    // When the user without any attempt try to view the solution. 
+    if( rootStore.store.resetWithoutTrial >= 1 ){
+        rootStore.pushToNotificationQueue({
+            'message' : messages.gameScreen.resetWithoutTrial[uniformIntTo(
+              Object.keys(messages.gameScreen.resetWithoutTrial).length)],
+            'screen': 'game',
+            'timeout': 6000, 
+            'type': 'tip.normal',
+          })
+    }
+}) 
 
 
 const Navigator = observer((props)=>{

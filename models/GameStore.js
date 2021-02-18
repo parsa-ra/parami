@@ -45,6 +45,7 @@ export const GameStore = types.model({
     difficulty: types.enumeration(['Easy', 'Medium', 'Hard']),
 
     resetHitCount: types.optional(types.number, 0),
+    resetWithoutTrial: types.optional(types.number, 0),
     enableSolution: types.optional(types.boolean, true),
     viewSolution: types.optional(types.boolean, false),
 
@@ -157,7 +158,7 @@ export const GameStore = types.model({
                 self.tileColors[i] = self.initialState[i] ; 
             }
             self.gameStatus = 'notdone' ; 
-            console.log(self.initialSolution) ; 
+            //console.log(self.initialSolution) ; 
             self.gameSolution = cast(self.initialSolution.toJSON()) ; 
             self.movesCount = 0 ; 
         }
@@ -165,6 +166,7 @@ export const GameStore = types.model({
     resetSolution(){
         self.viewSolution = false ; 
         self.resetHitCount = 0 ; 
+        self.resetWithoutTrial = 0 ;
     },
     setUpNewGame(){
         let conditionIterationNewGame = 1 ; 
@@ -233,6 +235,11 @@ export const GameStore = types.model({
     },
     setResetHitCount(value){
         self.resetHitCount = value ; 
+        //console.log(self.gameSolution.toJSON(), self.initialSolution.toJSON()); 
+        if(JSON.stringify(self.gameSolution.toJSON()) == JSON.stringify(self.initialSolution.toJSON())){
+            console.log("Increasing resetWithoutTrails") ; 
+            self.resetWithoutTrial += 1 ;
+        }
     },
     toggleViewSolution(){
         self.viewSolution = !self.viewSolution ; 

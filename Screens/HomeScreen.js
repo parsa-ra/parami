@@ -23,8 +23,9 @@ export const HomeScreen = observer((props)=>(
              {gameName}
         </Text>
      
-        <ConversationModal rootStore={props.rootStore} store={props.store} />
-
+        {props.rootStore.messageView &&
+        <ConversationModal rootStore={props.rootStore} store={props.store} /> 
+        }
         <View style={{
             alignItems: 'stretch',
         }}>

@@ -59,13 +59,15 @@ export const RootStore = types.model({
     
 }).actions((self)=>{
     let viewTimeOut ; 
+    var timeoutHandlers = [] ;
+
     return{
         setNavStack(screen){
             self.messageView = false ;
+            for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) ;}
             self.navStack.push(screen) ; 
             // Check, if to display any new notification
             viewTimeOut = self.checkNotificationView();
-            console.log(viewTimeOut) ; 
             viewTimeOut.then(() => {self.setMessageView(false)}) ; 
         },
         setStore(store){
@@ -81,7 +83,9 @@ export const RootStore = types.model({
             self.setCurrentNotificationIdx = Idx ; 
         },
         pushToNotificationQueue(notification){ 
-            self.messageView = false ;  
+            self.messageView = false ;
+            console.log(timeoutHandlers)
+            for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) ;}  
             self.notificationQueue.push(notification) ; 
         
             // Check, if to display any new notification 
@@ -106,7 +110,11 @@ export const RootStore = types.model({
 
                     self.currentNotificationIdx = toDisplayIdx[toDisplayIdx.length - 1 ] ;
 
-                    yield timeout(self.notificationQueue[self.currentNotificationIdx].timeout)
+                    yield new Promise((resolve, reject) => {
+                        // for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) }
+                        // timeoutHandlers = [] ; 
+                        timeoutHandlers.push(setTimeout(resolve, self.notificationQueue[self.currentNotificationIdx].timeout));}
+                        )
                 }
    
             }
@@ -117,5 +125,6 @@ export const RootStore = types.model({
         get lastNavEntry(){
             return self.navStack[self.navStack.length -1]
         },
+        
     }
 }) ; 

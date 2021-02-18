@@ -60,8 +60,7 @@ export const ConversationModal = observer((props)=>{
         ).start();
     }, [topPosition]) ; 
 
-    return props.rootStore.messageView ?  
-            <Animated.View style={{
+    return  <Animated.View style={{
             position: 'absolute',
             zIndex: 1,
             top: topPosition,
@@ -84,8 +83,7 @@ export const ConversationModal = observer((props)=>{
             </Text>
 
     </Animated.View>
-    :
-    null
+
 });
 
 
