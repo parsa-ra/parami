@@ -22,6 +22,11 @@
 
 ## Issues: 
 //TODO:
-* The fuck happens when the tile  arrangement became narrow .... 
+* The fuck happens when the tile  arrangement became narrow (height >>> width ).... 
 
 * Temporally resolved: We had to resize the default splash screen to avoid memory problem with JVM in some older devices: HTC10, Samsung Galaxy S6, Xiaomi mi 5T
+
+
+## Experimental Suggestion
+* May be add Server api call for updating `messages` showed to user? 
+  

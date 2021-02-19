@@ -26,9 +26,9 @@ export const ModalNotification = types.model({
 const GameStoreDefaultValues = {
     possibleColors: [], 
     movesCount: 0,
-    flipMode: '4',
-    widthTileNum: 0,
-    heightTileNum: 0,
+    flipMode: '8',
+    widthTileNum: 4,
+    heightTileNum: 4,
     edgeHandling: 'None',
     initialState: [],
     tileColors: [],
@@ -36,7 +36,7 @@ const GameStoreDefaultValues = {
     gameStatus: 'notdone',
     gameSolution: [],
     initialSolution: [],
-    difficulty: 'Medium',
+    difficulty: 'Easy',
 }
 
 export const RootStore = types.model({
@@ -64,11 +64,17 @@ export const RootStore = types.model({
     return{
         setNavStack(screen){
             self.messageView = false ;
-            for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) ;}
+            for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) ; }
+            timeoutHandlers = [] ; 
+
             self.navStack.push(screen) ; 
             // Check, if to display any new notification
             viewTimeOut = self.checkNotificationView();
-            viewTimeOut.then(() => {self.setMessageView(false)}) ; 
+            viewTimeOut.then(() => {self.setMessageView(false)
+                                    self.deleteFromNotificationQueue(self.currentNotificationIdx)}) ; 
+        },
+        increaseTotalPlayedGame(){
+            self.totalGamePlayed += 1 ;
         },
         setStore(store){
             applySnapshot(self.store, getSnapshot(store)) ;  
@@ -82,27 +88,45 @@ export const RootStore = types.model({
         setCurrentNotificationIdx(Idx){
             self.setCurrentNotificationIdx = Idx ; 
         },
+        deleteFromNotificationQueue(idx){
+            self.notificationQueue.splice(idx, 1) ; 
+        },
         pushToNotificationQueue(notification){ 
             self.messageView = false ;
-            console.log(timeoutHandlers)
+            console.log(timeoutHandlers);
+
+
             for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) ;}  
-            self.notificationQueue.push(notification) ; 
-        
+            timeoutHandlers = []; 
+            //self.notificationQueue.push(notification) ; 
+
             // Check, if to display any new notification 
-            viewTimeOut = self.checkNotificationView();
-            viewTimeOut.then(()=>{ self.setMessageView(false)}) ; 
+            viewTimeOut = self.checkNotificationView(notification);
+            viewTimeOut.then(()=>{ self.setMessageView(false)
+                                   self.deleteFromNotificationQueue(self.currentNotificationIdx)}) ; 
             
         },
-        checkNotificationView: flow(function* checkNotificationView(){
-            if(self.notificationQueue.length > 0){
+        checkNotificationView: flow(function* checkNotificationView(notification=null){
+                //console.log(self.notificationQueue.toJSON()) ; 
+
+                if(notification){
+                    if(self.notificationQueue.length > 0){
+                    self.notificationQueue.splice(self.currentNotificationIdx, 1) ; 
+                    self.notificationQueue.push(notification) ; 
+                    }else{
+                        self.notificationQueue.push(notification) ; 
+                    }
+                }
 
                 var toDisplayIdx = [];
+                // Get Messages Targeted for current Screen
                 for(let i=0; i<self.notificationQueue.length ; i++ ){ 
                   if(self.notificationQueue[i].screen == self.navStack[self.navStack.length -1]){
                     toDisplayIdx.push(i) ; 
                   }
                 }
                 
+                // If any available, well, show them ...
                 if(toDisplayIdx.length > 0){
                     // Display most recent notification 
                     // TODO: maybe we must change it ? 
@@ -113,11 +137,10 @@ export const RootStore = types.model({
                     yield new Promise((resolve, reject) => {
                         // for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) }
                         // timeoutHandlers = [] ; 
-                        timeoutHandlers.push(setTimeout(resolve, self.notificationQueue[self.currentNotificationIdx].timeout));}
+                        timeoutHandlers.push(setTimeout(resolve, 
+                            self.notificationQueue[self.currentNotificationIdx].timeout));}
                         )
-                }
-   
-            }
+                }          
         }),
     }
 }).views((self)=>{

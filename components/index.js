@@ -3,3 +3,4 @@ export * from "./Tile" ;
 export * from "./ControlBar" ; 
 export * from "./InfoBar" ; 
 export * from "./Modals" ;  
+export * from "./Navigator" ; 

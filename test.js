@@ -27,10 +27,19 @@ const colors = {
     }
 }
 
-var test = [] ; 
-for(var mc in colors.light.message){
-    for(var typec in colors.light.message[mc]){
-        test.push(mc + '.' +typec) ; 
-    }
-}
-console.log(test) ; 
+// var test = [] ; 
+// for(var mc in colors.light.message){
+//     for(var typec in colors.light.message[mc]){
+//         test.push(mc + '.' +typec) ; 
+//     }
+// }
+// console.log(test) ; 
+
+const timeout = (ms) => {return new Promise((resolve,reject)=>{setTimeout(()=>{console.log("Promise Fullfilled")}, ms)})} ;
+async function testOrder(){
+    console.log("Before Promise Statement") ; 
+    await timeout(5000) ; 
+    console.log("After Promise Statement") ; 
+} ; 
+
+testOrder(); 

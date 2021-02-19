@@ -1,171 +1,252 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
-import {AsyncStorage} from 'react-native'
+import { StyleSheet, Text, View, Dimensions, ActivityIndicator } from 'react-native';
+//import {AsyncStorage} from 'react-native'
 import {GameStore} from "./models/GameStore" ;
 import {RootStore} from "./models/RootStore" ; 
-import {HomeScreen, GameScreen, SettingScreen} from "./Screens"; 
 import {window, screen} from "./env" ;
 import {autorun} from "mobx" 
+
 import {colors, timeout, uniformIntTo} from "./Functions/Utils" ;
 
 import {observer} from "mobx-react-lite" ; 
-import { applySnapshot, getSnapshot, unprotect } from 'mobx-state-tree';
+import { applySnapshot, getSnapshot, onPatch, onSnapshot, unprotect } from 'mobx-state-tree';
 
 import {messages} from "./components/Messages" ; 
 
-const possibleColors = colors() ; 
+import {Navigator} from "./components" ; 
 
-// Initial Tile Count 
-const width =  4;
-const height = 4 ;
+import * as SplashScreen from 'expo-splash-screen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// TODO: Add Difficulty level dependent on number of random flips 
-const randomFlipNumber = Math.floor(Math.random()*4) + 1 ; // Number of flips //TODO:I think should depend to width and height of board.
+// const possibleColors = colors() ; 
 
-var initialTileColors = []
-for(var i=0; i< width*height; i++){
-  initialTileColors.push(possibleColors[0]) ; 
-}
-//console.log(initialTileColors)
-//console.log(GameStore) ; 
-//console.log(GameStore.properties.difficulty._types)  ; 
+// // Initial Tile Count 
+// const width =  4;
+// const height = 4 ;
 
-// TODO: Decide Persistent Storage, For example, local or using firebase
-const store = GameStore.create({
-  possibleColors: [possibleColors[0], possibleColors[1]], 
-  movesCount: 0,
-  flipMode: '8',
-  widthTileNum: width,
-  heightTileNum: height,
-  edgeHandling: 'None',
-  initialState: initialTileColors,  
-  tileColors: initialTileColors,
-  goodEndFlipCount: randomFlipNumber, 
-  gameStatus: 'notdone',
-  gameSolution: [],
-  initialSolution: [],
-  difficulty: 'Medium',
-}) ; 
+// // TODO: Add Difficulty level dependent on number of random flips 
+// const randomFlipNumber = Math.floor(Math.random()*4) + 1 ; // Number of flips //TODO:I think should depend to width and height of board.
 
-for(let i=0; i<randomFlipNumber; i++){
-  let toBeFlipIDX = Math.floor(Math.random() * store.tileNum);
-  store.flipTiles(toBeFlipIDX, false) ; 
-}
-store.setTileColors() ; 
+// var initialTileColors = []
+// for(var i=0; i< width*height; i++){
+//   initialTileColors.push(possibleColors[0]) ; 
+// }
+// //console.log(initialTileColors)
+// //console.log(GameStore) ; 
+// //console.log(GameStore.properties.difficulty._types)  ; 
 
-const rootStore = RootStore.create({
-    firstTime: true,
-    totalTimePlayed: 0, 
-    totalGamePlayed: 0, 
-    //store: {},
-    //toBeAppliedStore: {},
-    navStack: [
-       'home'
-    ],
-    notificationQueue: [
-    ]
-}) ;    
-
-applySnapshot(rootStore.store, getSnapshot(store)) ; 
-applySnapshot(rootStore.toBeAppliedStore, getSnapshot(store)) ; 
-
-rootStore.setMessageView(true) ; 
-
-
-autorun(()=>{
-  console.log(rootStore.messageView) ; 
-})
-
-rootStore.pushToNotificationQueue(
-  {
-    'message' : 'Welcome Back ... ',
-    'screen': 'home',
-    'timeout': 4000, 
-    'type': 'tip.normal',
-  }
-)
-
-// // // Handling the notification.
-// autorun(() => {
-//   if(rootStore.notificationQueue.length > 0){
-
-//       var toDisplayIdx = [];
-//       for(let i=0; i<rootStore.notificationQueue.length ; i++ ){ 
-//         if(rootStore.notificationQueue[i].screen == rootStore.navStack[rootStore.navStack.length -1]){
-//           toDisplayIdx.push(i) ; 
-//         }
-//       }
-      
-//       console.log(toDisplayIdx) ; 
-//       if(toDisplayIdx.length){
-//       // Most recent relevant notification.
-//       // console.log(rootStore, toDisplayIdx.length) ; 
-//       rootStore.setMessageView(true) ;
-//       rootStore.setCurrentNotificationIdx(toDisplayIdx.length -1) ; 
-
-//       timeout(rootStore.notificationQueue[toDisplayIdx[toDisplayIdx.length-1]].timeout).then(()=>{
-//         rootStore.setMessageView(false)
-//       });
-
-//     }
-//   }
+// // TODO: Decide Persistent Storage, For example, local or using firebase
+// const store = GameStore.create({
+//   possibleColors: [possibleColors[0], possibleColors[1]], 
+//   movesCount: 0,
+//   flipMode: '8',
+//   widthTileNum: width,
+//   heightTileNum: height,
+//   edgeHandling: 'None',
+//   initialState: initialTileColors,  
+//   tileColors: initialTileColors,
+//   goodEndFlipCount: randomFlipNumber, 
+//   gameStatus: 'notdone',
+//   gameSolution: [],
+//   initialSolution: [],
+//   difficulty: 'Medium',
 // }) ; 
 
-autorun(()=>{
-    // When the user without any attempt try to view the solution. 
-    if( rootStore.store.resetWithoutTrial >= 1 ){
-        rootStore.pushToNotificationQueue({
-            'message' : messages.gameScreen.resetWithoutTrial[uniformIntTo(
-              Object.keys(messages.gameScreen.resetWithoutTrial).length)],
-            'screen': 'game',
-            'timeout': 6000, 
-            'type': 'tip.normal',
-          })
-    }
-}) 
+// for(let i=0; i<randomFlipNumber; i++){
+//   let toBeFlipIDX = Math.floor(Math.random() * store.tileNum);
+//   store.flipTiles(toBeFlipIDX, false) ; 
+// }
+// store.setTileColors() ; 
+
+// const rootStore = RootStore.create({
+//     firstTime: true,
+//     totalTimePlayed: 0, 
+//     totalGamePlayed: 0, 
+//     //store: {},
+//     //toBeAppliedStore: {},
+//     navStack: [
+//        'home'
+//     ],
+//     notificationQueue: [
+//     ]
+// }) ;    
+
+// applySnapshot(rootStore.store, getSnapshot(store)) ; 
+// applySnapshot(rootStore.toBeAppliedStore, getSnapshot(store)) ; 
+
+// rootStore.setMessageView(true) ; 
 
 
-const Navigator = observer((props)=>{
-    switch(props.rootStore.lastNavEntry){
-      case 'home':
-        return <HomeScreen rootStore={props.rootStore} store={props.rootStore.store}/>
-      case 'game':
-        return <GameScreen rootStore={props.rootStore} store={props.rootStore.store}/>
-      case 'setting':
-        // Note what we pass to the Store... 
-        return <SettingScreen rootStore={props.rootStore} store={props.rootStore.toBeAppliedStore}/>
+
+let rootStore ;
+let rootStoreSnapShot ; 
+
+
+// TODO: Autoruns after adding Async isn't working, check this issue later, currently we mimicking the effect 
+// in gamestore
+// autorun(()=>{
+//   console.log("test") ; 
+//     // When the user without any attempt try to view the solution. 
+//     if( rootStore.store.resetWithoutTrial >= 1 ){
+//         rootStore.pushToNotificationQueue({
+//             'message' : messages.gameScreen.resetWithoutTrial[uniformIntTo(
+//               Object.keys(messages.gameScreen.resetWithoutTrial).length)],
+//             'screen': 'game',
+//             'timeout': 6000, 
+//             'type': 'tip.normal',
+//           })
+//     }
+// }) ;
+
+
+const loadRootStore = async () => {
+  try{
+    rootStoreSnapShot = await AsyncStorage.getItem("rootStore") ;
+    
+    console.log(rootStoreSnapShot) ; 
+    if(rootStoreSnapShot != null){
+      console.log(JSON.parse(rootStoreSnapShot)) ; 
+      //applySnapshot(rootStore, JSON.parse(rootStoreSnapShot)) ; 
+      rootStore = RootStore.create(JSON.parse(rootStoreSnapShot)) ; 
+      console.log("Loading Game From LocalStorage") ; 
+
+      rootStore.pushToNotificationQueue(
+        {
+          'message' : 'Welcome Back ... ',
+          'screen': 'home',
+          'timeout': 4000, 
+          'type': 'tip.normal',
+        }
+      )
+
+    }else{
+      console.log("Initializing a New Environment") ;
+      rootStore = RootStore.create({
+        firstTime: true,
+        totalTimePlayed: 0, 
+        totalGamePlayed: 0, 
+        //store: {},
+        //toBeAppliedStore: {},
+        navStack: [
+           'home'
+        ],
+        notificationQueue: [
+        ]
+    }) ;
+    rootStore.pushToNotificationQueue(
+      {
+        'message' : messages.general.userEntersTheGame.firstTime[uniformIntTo(Object.keys(messages.general.userEntersTheGame.firstTime).length)],
+        'screen': 'home',
+        'timeout': 4000, 
+        'type': 'tip.normal',
+      }
+    ) ;
+
     }
-}) ; 
+
+    onPatch(rootStore.notificationQueue, newPatch=>{
+      console.log(newPatch) ; 
+    }) ; 
+
+    // TODO: Important, onSnapShot will be called in each user tap on anything which is not efficient to store the state in this way, 
+    // instead I think it's better to update the state in regular timestamps.
+    // onSnapshot(rootStore.store, storeSnapshot =>{
+    //     (async() => {
+    //         console.log("Begin storing rootStore.store") ; 
+    //         await AsyncStorage.setItem("rootStore.store", JSON.stringify(storeSnapshot)) ; 
+    //         console.log("storing completed") ; 
+    //     })();
+    // })
+    const updatingInterval = 60;
+
+    // updating the rootStore every 10 seconds ... 
+    setInterval(()=>{
+      console.log("Begin Storing the State") ; 
+      try{
+        (async() => {
+          await AsyncStorage.setItem("rootStore", JSON.stringify(getSnapshot(rootStore))) ; 
+          console.log("Updating RootStore complete")
+        })();
+      }catch(e){
+        console.warn(e) ; 
+      }
+    }, updatingInterval* 1000);
+
+    return rootStore ; 
+
+  }catch(e){
+    // Fallback 
+    console.warn(e) ; 
+  }
+}
 
 
 export default function App() {
 
-  const [dimensions, setDimensions] = useState({ window, screen });
+  const [appState, setAppState] = useState(false) ; 
+  //const [dimensions, setDimensions] = useState({ window, screen });
+
+  // async function loadStores() {
+  //   console.log("Load Store")  ;
+  //   try {
+  //      rootStore = await loadRootStore() ; 
+  //   }catch(e){
+  //     console.warn(e) ; 
+  //   }finally{
+  //       setAppState(true) ; 
+  //       await SplashScreen.hideAsync();
+  //       return rootStore;
+  //   }
+  // }
+
+  useEffect(()=>{
+    try{
+      (async() => {
+        await SplashScreen.preventAutoHideAsync();
+        })();
+      (async () => {
+          console.log("Load Store")  ;
+          try {
+            rootStore = await loadRootStore() ; 
+            await SplashScreen.hideAsync();
+            setAppState(true) ; 
+          }catch(e){
+            console.warn(e) ; 
+          }finally{
+
+          } 
+      })();
+
+      const onChange = ({ window, screen }) => {
+        //setDimensions({ window, screen });
+        rootStore.store.dims.setWidthHeight(window.width, window.height) ;
+        
+      };
+
+      Dimensions.addEventListener('change', onChange);
+
+    }catch (e) {
+      console.warn(e) ; 
+    }
+
+  }, []) // Note that the empty list at the end meant to useEffect to only fire once when the object mounted.
+
   
-  const onChange = ({ window, screen }) => {
-    setDimensions({ window, screen });
-    store.dims.setWidthHeight(window.width, window.height) ;
-    //store.setOrientation() ;  
-  };
-
-  useEffect(() => {
-    Dimensions.addEventListener('change', onChange);
-    return () => {
-      Dimensions.removeEventListener('change', onChange);
-    };
-  });
-
-
-  return (
+  return appState ? 
     <View style={[styles.container, {
     }]}>
 
       <Navigator rootStore={rootStore}/>
       
       <StatusBar hidden={true} />
+    </View> 
+    : //For Web only
+    <View style={{justifyContent: 'center', alignItems: 'center', flex:1}}>
+      <ActivityIndicator/>
     </View>
-  );
+    
+  ;
 }
 
 const styles = StyleSheet.create({

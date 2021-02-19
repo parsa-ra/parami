@@ -1,9 +1,11 @@
 import React from "react"
-import {types, cast} from "mobx-state-tree"
+import {types, cast, getParent} from "mobx-state-tree"
 import {window, screen} from "../env" 
 import {colors} from "../Functions/Utils"
 import {tileMargin} from "../env" ; 
 //import { string } from "mobx-state-tree/dist/internal";
+import {messages} from "../components/Messages" ; 
+import {uniformIntTo} from "../Functions/Utils";
 
 
 export const Dims = types.model({
@@ -171,6 +173,7 @@ export const GameStore = types.model({
     setUpNewGame(){
         let conditionIterationNewGame = 1 ; 
         self.resetSolution() ; 
+        getParent(self).increaseTotalPlayedGame() ; 
     
         var possibleColors = colors() ; 
         self.possibleColors = [possibleColors[0], possibleColors[1]] ; 
@@ -239,6 +242,16 @@ export const GameStore = types.model({
         if(JSON.stringify(self.gameSolution.toJSON()) == JSON.stringify(self.initialSolution.toJSON())){
             console.log("Increasing resetWithoutTrails") ; 
             self.resetWithoutTrial += 1 ;
+            if(self.resetWithoutTrial >= 1){
+                getParent(self).pushToNotificationQueue({
+                    'message' : messages.gameScreen.resetWithoutTrial[uniformIntTo(
+                      Object.keys(messages.gameScreen.resetWithoutTrial).length)],
+                    'screen': 'game',
+                    'timeout': 6000, 
+                    'type': 'tip.normal',
+                  }) ; 
+
+            }
         }
     },
     toggleViewSolution(){
@@ -275,7 +288,10 @@ export const GameStore = types.model({
                 return true;
             }
             return false; 
-        }
+        },
+        resetWithoutTrailCondition(){
+
+        },
     }
 }) ; 
 
