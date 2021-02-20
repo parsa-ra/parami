@@ -7,7 +7,7 @@ import {RootStore} from "./models/RootStore" ;
 import {window, screen} from "./env" ;
 import {autorun} from "mobx" 
 
-import {colors, timeout, uniformIntTo} from "./Functions/Utils" ;
+import {colors, randomPickFromCurrentNode, timeout, uniformIntTo} from "./Functions/Utils" ;
 
 import {observer} from "mobx-react-lite" ; 
 import { applySnapshot, getSnapshot, onPatch, onSnapshot, unprotect } from 'mobx-state-tree';
@@ -18,6 +18,7 @@ import {Navigator} from "./components" ;
 
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 // const possibleColors = colors() ; 
 
@@ -101,6 +102,7 @@ let rootStoreSnapShot ;
 
 
 const loadRootStore = async () => {
+  const timeThreshold = 1000 * 60 * 60 * 24 * 3 ; 
   try{
     rootStoreSnapShot = await AsyncStorage.getItem("rootStore") ;
     
@@ -111,14 +113,26 @@ const loadRootStore = async () => {
       rootStore = RootStore.create(JSON.parse(rootStoreSnapShot)) ; 
       console.log("Loading Game From LocalStorage") ; 
 
+      if(rootStore.lastTimeIn - Date.now() > timeThreshold ){
       rootStore.pushToNotificationQueue(
         {
-          'message' : 'Welcome Back ... ',
+          'message' : randomPickFromCurrentNode(messages.general.userEntersTheGame.longtimeago) , 
           'screen': 'home',
-          'timeout': 4000, 
+          'timeout': 6000, 
           'type': 'tip.normal',
         }
       )
+      }else{
+        rootStore.pushToNotificationQueue(
+          {
+            'message' : randomPickFromCurrentNode(messages.general.userEntersTheGame.recent),
+            'screen': 'home',
+            'timeout': 6000, 
+            'type': 'tip.normal',
+          }
+        )      
+      }
+      rootStore.setTimeIn() ;
 
     }else{
       console.log("Initializing a New Environment") ;
@@ -126,6 +140,7 @@ const loadRootStore = async () => {
         firstTime: true,
         totalTimePlayed: 0, 
         totalGamePlayed: 0, 
+        lastTimeIn: Date.now(),
         //store: {},
         //toBeAppliedStore: {},
         navStack: [
@@ -143,11 +158,19 @@ const loadRootStore = async () => {
       }
     ) ;
 
+    rootStore.pushToNotificationQueue({
+      'message': randomPickFromCurrentNode(messages.gameScreen.solutionTip),
+      'screen': 'game',
+      'timeout': 8000,
+      'type': 'tip.important',
+    });
+
     }
 
-    onPatch(rootStore.notificationQueue, newPatch=>{
+    onPatch(rootStore, newPatch=>{
       console.log(newPatch) ; 
     }) ; 
+
 
     // TODO: Important, onSnapShot will be called in each user tap on anything which is not efficient to store the state in this way, 
     // instead I think it's better to update the state in regular timestamps.
@@ -158,9 +181,9 @@ const loadRootStore = async () => {
     //         console.log("storing completed") ; 
     //     })();
     // })
-    const updatingInterval = 60;
 
-    // updating the rootStore every 10 seconds ... 
+
+    const updatingInterval = 20; // seconds
     setInterval(()=>{
       console.log("Begin Storing the State") ; 
       try{

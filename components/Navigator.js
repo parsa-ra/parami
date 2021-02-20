@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react" ; 
 import {observer} from "mobx-react-lite" ; 
-import {HomeScreen, GameScreen, SettingScreen} from "../Screens"; 
+import {HomeScreen, GameScreen, SettingScreen, AboutScreen} from "../Screens"; 
 import { Animated, View, Text, Modal, TouchableHighlight } from "react-native";
 
 export const Navigator = observer((props)=>{
@@ -12,6 +12,8 @@ export const Navigator = observer((props)=>{
       case 'setting':
         // Note what we pass to the Store... 
         return <SettingScreen rootStore={props.rootStore} store={props.rootStore.toBeAppliedStore}/>
+      case 'about':
+        return <AboutScreen rootStore={props.rootStore}/>
     }
   }) ; 
   ; 

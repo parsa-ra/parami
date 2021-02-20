@@ -1,7 +1,7 @@
 import React from "react"
 import {types, cast, getParent} from "mobx-state-tree"
 import {window, screen} from "../env" 
-import {colors} from "../Functions/Utils"
+import {colors, randomPickFromCurrentNode} from "../Functions/Utils"
 import {tileMargin} from "../env" ; 
 //import { string } from "mobx-state-tree/dist/internal";
 import {messages} from "../components/Messages" ; 
@@ -102,9 +102,43 @@ export const GameStore = types.model({
     },
     setTileCount(dim, value){
         if(dim == "width"){
-            self.widthTileNum = value ; 
+            if(value < 3){
+                getParent(self).pushToNotificationQueue({
+                    'message': randomPickFromCurrentNode(messages.settingScreen.widthAwkward),
+                    'timeout': 5000,
+                    'screen': "setting",
+                    'type': "info.important"
+                }) ;
+            }else if(value * self.heightTileNum > 100){
+                getParent(self).pushToNotificationQueue({
+                    'message': randomPickFromCurrentNode(messages.settingScreen.tooBig),
+                    'timeout': 5000,
+                    'screen': "setting",
+                    'type': "info.important"
+                }) ;
+            }else{
+                self.widthTileNum = value ; 
+            }
+
         }else if(dim == "height"){
-            self.heightTileNum = value ;
+            if(value < 3){
+                getParent(self).pushToNotificationQueue({
+                    'message': randomPickFromCurrentNode(messages.settingScreen.heightAwkward),
+                    'timeout': 5000,
+                    'screen': "setting",
+                    'type': "info.important"
+                }) ;               
+            }else if(value * self.widthTileNum > 100){
+                getParent(self).pushToNotificationQueue({
+                    'message': randomPickFromCurrentNode(messages.settingScreen.tooBig),
+                    'timeout': 5000,
+                    'screen': "setting",
+                    'type': "info.important"
+                }) ;
+            }
+            else{
+                self.heightTileNum = value ;
+            }
         }else{
             console.warn("Unexpected Dimensional Value") ;
         }

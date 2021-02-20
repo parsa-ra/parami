@@ -29,6 +29,28 @@ export const HomeScreen = observer((props)=>(
         <View style={{
             alignItems: 'stretch',
         }}>
+
+
+            { props.rootStore.totalGamePlayed != 0  ? <View>
+                <TouchableHighlight  style={{
+                    backgroundColor: colors.light.secondary,
+                    padding: 15,
+                    borderRadius: 6, 
+                    margin: 10,
+                }} onPress={()=>(props.rootStore.setNavStack('game'))} >
+                    <Text style={[
+                        {
+                            fontSize: 25,
+                            textAlign: 'center',
+                            color: colors.light.textColor,
+                        }
+                    ]}>
+                        Pick Where You Left
+                    </Text>
+                </TouchableHighlight>
+            </View> : 
+            null}
+
             <View>
                 <TouchableHighlight  style={{
                     backgroundColor: colors.light.primary,
@@ -49,25 +71,6 @@ export const HomeScreen = observer((props)=>(
                         }
                     ]}>
                         New Game
-                    </Text>
-                </TouchableHighlight>
-            </View>
-
-            <View>
-                <TouchableHighlight  style={{
-                    backgroundColor: colors.light.secondary,
-                    padding: 15,
-                    borderRadius: 6, 
-                    margin: 10,
-                }} onPress={()=>(props.rootStore.setNavStack('game'))} >
-                    <Text style={[
-                        {
-                            fontSize: 25,
-                            textAlign: 'center',
-                            color: colors.light.textColor,
-                        }
-                    ]}>
-                        Pick Where You Left
                     </Text>
                 </TouchableHighlight>
             </View>

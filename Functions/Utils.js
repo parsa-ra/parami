@@ -55,3 +55,8 @@ export const uniformIntTo = (limit) => {
 export const timeout = (ms, timeOutHandler) => {return new Promise((resolve, reject) => {
     timeOutHandler = setTimeout(resolve, ms)
 })} ; 
+
+export const randomPickFromCurrentNode = (node) => {
+    let keys = Object.keys(node) ; 
+    return node[keys[uniformIntTo(keys.length)]] ; 
+}

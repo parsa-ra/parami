@@ -4,7 +4,9 @@ import {View, Text, TouchableHighlight, ScrollView, StyleSheet, StatusBarm, Imag
 import {NavBar} from "../components/NavBar" ; 
 import {colors} from "../styles/styles" ; 
 import {GameStore} from "../models/GameStore"
-
+import { messages } from "../components/Messages";
+import {ConversationModal} from "../components/Modals" ; 
+import {randomPickFromCurrentNode} from "../Functions/Utils" ; 
 
 const styles = StyleSheet.create({
     settingHeader:{
@@ -21,7 +23,7 @@ const styles = StyleSheet.create({
     horizontalLine:{
         borderTopWidth: 1,
         borderTopColor: colors.light.textFillAreaLight,
-        margin: 2, 
+        margin: 5, 
     }
 })
 
@@ -74,14 +76,14 @@ const modeNames = (modeName)=>{
 const ValueController = observer((props)=>(
     <View style={
         {
-            margin: 5,
+            margin: 3,
             flexDirection: 'row',
             flex: 1, 
             backgroundColor: colors.light.fillAreaDark, 
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 6,
-            padding: 5,
+            padding: 3,
         }
     }>
         <Text style={{
@@ -99,6 +101,7 @@ const ValueController = observer((props)=>(
             alignItems: 'stretch',
             justifyContent: 'center',
         }}>
+            
         <ControlButt store={props.store} displayText="-" ident={props.ident} value={props.value-1}/>
 
         <View style={{
@@ -202,7 +205,7 @@ const ModeItem = observer((props)=>(
 ));
 
 
-const DiffItem = observer((props)=>(
+const MultiSelectItem = observer((props)=>(
     <TouchableHighlight style={{
         alignItems: 'center',
         margin: 4,
@@ -228,6 +231,69 @@ const DiffItem = observer((props)=>(
     </TouchableHighlight>
 ));
 
+const Tickable = observer((props)=>{
+    console.log(typeof props.pressHandler) ; 
+    return <View style={{
+        flexDirection: 'column',
+    }}> 
+        <Text style={[styles.settingHeader]}>
+            {props.Header}
+        </Text>
+
+        <TouchableHighlight style={{
+            flex: 1, 
+        }}  onPress={() => {props.pressHandler()}}>
+            <View style={{
+                flex:1,
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                flexDirection: 'row', 
+            }}>
+                <View style={{
+                    borderRadius: 5,
+                    borderWidth: 3,
+                    borderColor: colors.light.fillAreaDark,
+                    height: 30,
+                    width: 30,
+                    margin: 5,
+                }} >
+                <View style={{
+                    backgroundColor: props.enabled ? colors.light.primary : colors.light.fillArea,
+                    flex: 1,
+                }}>
+
+                </View>
+                </View>
+
+                <Text style={[styles.settingDescription, {
+                    flex: 1,
+                    textAlignVertical: 'center',
+                }]}>
+                {props.Description}
+                </Text>
+            </View> 
+        </TouchableHighlight>
+
+    </View>
+});
+
+const SettingButt = observer((props) => (
+    <TouchableHighlight style={{
+        flexDirection: 'row',
+        margin: 5,
+        backgroundColor: colors.light.fillArea,
+    }} onPress={props.pressHandler}>
+        <View style={{
+            justifyContent: 'flex-start',
+            padding: 5, 
+        }}>
+            <Text style={[styles.settingHeader]}>
+                {props.Name}
+            </Text>
+        </View>
+    </TouchableHighlight>
+)) ; 
 
 export const SettingScreen = observer((props)=>(
     <View style={{
@@ -236,6 +302,11 @@ export const SettingScreen = observer((props)=>(
         alignItems: 'stretch',
         //paddingTop: StatusBar.currentHeight, 
     }}>
+
+            { props.rootStore.messageView &&
+            <ConversationModal store={props.store} rootStore={props.rootStore}/>
+            }
+
             <NavBar store={props.rootStore.store} rootStore={props.rootStore}/>
             <ScrollView style={{
                 flex: 1,
@@ -255,14 +326,14 @@ export const SettingScreen = observer((props)=>(
                     Change How the flipping occurs.
                 </Text>
                 <View style={[styles.horizontalLine]}/>
-                <ScrollView style={
+                <View style={   // Nested ScrollView not working really well in some phones .
                     {
                     backgroundColor: colors.light.fillAreaDark,
                     flexDirection: 'column',
                     flex: 1,
                     borderRadius: 6,
                     margin: 4,
-                    maxHeight: Math.floor(props.store.dims.height/3),
+                    //maxHeight: Math.floor(props.store.dims.height/3),
                     padding: 5,
                     //alignItems: 'center',
                 } 
@@ -275,7 +346,7 @@ export const SettingScreen = observer((props)=>(
                         ))
                     }
 
-                </ScrollView>
+                </View>
 
 
                 <Text style={[styles.settingHeader]}>
@@ -297,10 +368,10 @@ export const SettingScreen = observer((props)=>(
                     margin: 4,
                 }}>
                     { GameStore.properties.difficulty._types.map(item => (
-                        <DiffItem diffName={item.value} store={props.store} key={item.value}/>
+                        <MultiSelectItem diffName={item.value} store={props.store} key={item.value}/>
                     )) }
                 </View>               
-                <View style={[styles.horizontalLine]}/>
+                {/*<View style={[styles.horizontalLine]}/>*/}
 
 
                 <Text style={[styles.settingHeader]}>
@@ -311,9 +382,47 @@ export const SettingScreen = observer((props)=>(
                 </Text>
                 <View style={[styles.horizontalLine]}/>
                 
-                <ValueController store={props.store} name="Width Tiles Number" ident="width" value={props.store.widthTileNum}/>
-                <ValueController store={props.store}name="Height Tiles Number" ident="height" value={props.store.heightTileNum}/>
+                <ValueController store={props.store} name=" Width Tiles Number" ident="width" value={props.store.widthTileNum}/>
+                <ValueController store={props.store} name=" Height Tiles Number" ident="height" value={props.store.heightTileNum}/>
+
+                <View style={[styles.horizontalLine]}/>
+                <Tickable Header="Conversation Mode" Description="Using this feature, you allow me talk back to your actions." 
+                pressHandler={()=>{
+                    if(props.rootStore.enabledConversationMode){
+                    props.rootStore.pushToNotificationQueue({
+                        message: randomPickFromCurrentNode(messages.featureWide.disabling) ,
+                        screen: 'setting',
+                        timeout: 5000,
+                        type: 'info.important'
+                    });
+                    props.rootStore.toggleConversationMode();
+                    }else{
+                        props.rootStore.toggleConversationMode() ; 
+                        props.rootStore.pushToNotificationQueue({
+                            message: randomPickFromCurrentNode(messages.featureWide.enabling) ,
+                            screen: 'setting',
+                            timeout: 5000,
+                            type: 'info.normal'
+                        });
+                    }
+                }}
+                enabled={props.rootStore.enabledConversationMode}/>
+
+
+
+                {/*                 
+                <View style={[styles.horizontalLine]}/>
+                <SettingButt Name=""/> */}
+
+                <View style={[styles.horizontalLine]}/>
+                <SettingButt  Name="Open Source Licenses"/>
+
+
+                <View style={[styles.horizontalLine]}/>
+                <SettingButt Name="About" pressHandler={()=>props.rootStore.setNavStack("about")}/>
+
                 
+
             </ScrollView>
     </View>
 )); 

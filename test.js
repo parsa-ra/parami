@@ -1,3 +1,4 @@
+
 const colors = {
     light: {
         primary: '#327191',
@@ -35,11 +36,26 @@ const colors = {
 // }
 // console.log(test) ; 
 
-const timeout = (ms) => {return new Promise((resolve,reject)=>{setTimeout(()=>{console.log("Promise Fullfilled")}, ms)})} ;
-async function testOrder(){
-    console.log("Before Promise Statement") ; 
-    await timeout(5000) ; 
-    console.log("After Promise Statement") ; 
-} ; 
+// const timeout = (ms) => {return new Promise((resolve,reject)=>{setTimeout(()=>{console.log("Promise Fullfilled")}, ms)})} ;
+// async function testOrder(){
+//     console.log("Before Promise Statement") ; 
+//     await timeout(5000) ; 
+//     console.log("After Promise Statement") ; 
+// } ; 
 
-testOrder(); 
+//TODO: Replace Math.round() with something like "Mersenne Twister" 
+const uniformIntTo = (limit) => {
+    return Math.floor(Math.random()*limit) ; 
+}
+
+const timeout = (ms, timeOutHandler) => {return new Promise((resolve, reject) => {
+    timeOutHandler = setTimeout(resolve, ms)
+})} ; 
+
+const randomPickFromCurrentNode = (node) => {
+    let keys = Object.keys(node) ; 
+    return node[keys[uniformIntTo(keys.length)]] ; 
+}
+
+//console.log(colors.light) ; 
+console.log(randomPickFromCurrentNode(colors.light));

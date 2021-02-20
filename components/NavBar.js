@@ -20,7 +20,7 @@ export const NavBar = observer((props)=>(
     //minWidth: props.store.tileSize * props.store.widthTileNum + 1,
   }}>
     <TouchableHighlight style={{
-    }} onPress={()=>props.rootStore.setNavStack('home')}>
+    }} onPress={()=>props.rootStore.setNavStack()}>
       <View style={{
         flexDirection: 'row',
         justifyContent: 'flex-start',

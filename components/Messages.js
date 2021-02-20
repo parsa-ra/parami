@@ -8,11 +8,11 @@ export const messages = {
         userEntersTheGame: {
             recent:{
                 0: "Thanks for coming back",
-                1: "I hope seeing you like this every day "
+                1: "I hope seeing you like this every day ",
             },
             longtimeago:{
                 0: "Where have you been? don't left us like that again ",
-                1: "You're making my digital hearth pounding again ... "
+                1: "You're making my digital hearth pounding again ... ",
             },
             firstTime: {
                 0: "Welcome to Parami ... ",
@@ -25,15 +25,35 @@ export const messages = {
             1: "We'll be life long pals",
         },
         disabling: {
-            0: "It must have been a hard day ",
+            0: "Last Words, It must have been a hard day ",
             1: "You annoyed by my presence, sorry, didn't mean to 😔",
-            2: "Yeah you aren't the first one, people annoyed by me alot",
+            2: "Yeah you aren't the first one, people annoyed by me allot",
         }
     },
     gameScreen: {
         resetWithoutTrial: {
             0: 'Common, At least try a bit ... ',
             1: "Don't Give Up that easily",
+        },
+        solutionTip:{
+            0: 'By hitting the reset button 3 Times You can view the solution to the current state of the puzzle.',
+            
         }
+    },
+    settingScreen: {
+        heightAwkward: {
+            0: "Do you like narrow stuff ? ",
+            1: "Every thing should be in balance this config is definitely out of balance",
+        },
+        widthAwkward: {
+            0: "Do you like thick stuff ? ",
+            1: "You table is out of balance ",
+        },
+        tooBig: {
+            0: "Sorry, Larger Tables isn't feasible" ,
+            1: "You must have been genius or something, Table this large isn't feasible in your screen",
+            2: "Your eyes could be hearth in your current device for table this big", 
+        },
+
     }
 }

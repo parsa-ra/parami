@@ -18,10 +18,12 @@ export const colors = {
                 critical: '#ff4548',
             }, //TODO: Change Categorization of tip and info
             tip: { 
-                normal: '#e6ffcc'
+                normal: '#e6ffcc',
+                important: '#cbadff',
             },
             info: {
-                normal: '#e6ffcc'
+                normal: '#e6ffcc',
+                important: '#ffefc2',
             }
 
         }

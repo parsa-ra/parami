@@ -43,6 +43,7 @@ export const RootStore = types.model({
     firstTime: types.boolean, // Depicts if this is the first time the app is launched, for example to show some tutorial stuff ... 
     totalTimePlayed: types.number, // In seconds
     totalGamePlayed: types.number,  
+    lastTimeIn: types.optional(types.number, 0),
     store: types.optional(GameStore, {
             ...GameStoreDefaultValues
       }),  //Pick where you left off resemblance
@@ -52,6 +53,7 @@ export const RootStore = types.model({
     navStack: types.array(types.string),
 
     // Experimental 
+    enabledConversationMode: types.optional(types.boolean, true),
     notificationQueue: types.array(ModalNotification),
     messageView: types.optional(types.boolean, false),
     viewClosePending: types.optional(types.boolean, false),
@@ -62,16 +64,26 @@ export const RootStore = types.model({
     var timeoutHandlers = [] ;
 
     return{
-        setNavStack(screen){
+        setNavStack(screen=null){ // When nothing is passed it will going back to the previous screen, mimicking the BACK effect.
             self.messageView = false ;
             for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) ; }
             timeoutHandlers = [] ; 
 
-            self.navStack.push(screen) ; 
+            if(screen){
+                self.navStack.push(screen);
+            }else{
+            self.navStack.pop() ;
+            }
             // Check, if to display any new notification
             viewTimeOut = self.checkNotificationView();
             viewTimeOut.then(() => {self.setMessageView(false)
                                     self.deleteFromNotificationQueue(self.currentNotificationIdx)}) ; 
+        },
+        toggleConversationMode(){
+            self.enabledConversationMode = !self.enabledConversationMode ;
+        },
+        setTimeIn(){
+            self.lastTimeIn = Date.now() ; 
         },
         increaseTotalPlayedGame(){
             self.totalGamePlayed += 1 ;
@@ -92,13 +104,9 @@ export const RootStore = types.model({
             self.notificationQueue.splice(idx, 1) ; 
         },
         pushToNotificationQueue(notification){ 
-            self.messageView = false ;
-            console.log(timeoutHandlers);
-
-
-            for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) ;}  
-            timeoutHandlers = []; 
-            //self.notificationQueue.push(notification) ; 
+            if(!self.enabledConversationMode){
+                return
+            }
 
             // Check, if to display any new notification 
             viewTimeOut = self.checkNotificationView(notification);
@@ -110,7 +118,7 @@ export const RootStore = types.model({
                 //console.log(self.notificationQueue.toJSON()) ; 
 
                 if(notification){
-                    if(self.notificationQueue.length > 0){
+                    if(self.notificationQueue.length > 1){
                     self.notificationQueue.splice(self.currentNotificationIdx, 1) ; 
                     self.notificationQueue.push(notification) ; 
                     }else{
@@ -118,21 +126,26 @@ export const RootStore = types.model({
                     }
                 }
 
-                var toDisplayIdx = [];
+                let toDisplayIdx = [];
                 // Get Messages Targeted for current Screen
                 for(let i=0; i<self.notificationQueue.length ; i++ ){ 
-                  if(self.notificationQueue[i].screen == self.navStack[self.navStack.length -1]){
+                  if(self.notificationQueue[i].screen == self.lastNavEntry){
                     toDisplayIdx.push(i) ; 
                   }
                 }
                 
+                console.log(toDisplayIdx) ; 
                 // If any available, well, show them ...
                 if(toDisplayIdx.length > 0){
+                    self.messageView = false ;
+           
+                    for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) ;}  
+                    timeoutHandlers = []; 
+                    self.currentNotificationIdx = toDisplayIdx[toDisplayIdx.length - 1 ] ;
                     // Display most recent notification 
                     // TODO: maybe we must change it ? 
                     self.messageView = true ;
 
-                    self.currentNotificationIdx = toDisplayIdx[toDisplayIdx.length - 1 ] ;
 
                     yield new Promise((resolve, reject) => {
                         // for(let idx in timeoutHandlers ){ clearTimeout(timeoutHandlers[idx]) }
