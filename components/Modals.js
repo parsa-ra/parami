@@ -4,6 +4,8 @@ import { Animated, View, Text, Modal, TouchableHighlight } from "react-native";
 import {colors, textStyle} from "../styles/styles" ; 
 import { uniformIntTo} from "../Functions/Utils" ; 
 import { set } from "react-native-reanimated";
+import {messages} from "../components/Messages"
+import {randomPickFromCurrentNode} from "../Functions/Utils" ;
 
 const messagesWhenSolutionIsOn = [
     "Don't Worry You'll Solve it Next Time ... ", 
@@ -17,7 +19,7 @@ const NotificationConstructor = (props) => {
         style={{
             ...textStyle
         }}>
-            {messagesWhenSolutionIsOn[uniformIntTo(messagesWhenSolutionIsOn.length)]}  
+            {randomPickFromCurrentNode(messages.gameScreen.endGame.whenSolutionIsOn)} 
         </Text>
     }
     else{
@@ -25,21 +27,21 @@ const NotificationConstructor = (props) => {
         return <Text 
         style={{
             ...textStyle
-        }}> You Done It, But it can be solved with fewer moves want to try again? {"\n"}
-        Or you can start new game </Text>         
+        }}> 
+            {randomPickFromCurrentNode(messages.gameScreen.endGame.worseThanExpected)}
+         </Text>         
         
     }else if(props.playerMoveCount == props.goodEndFlipCount){
         return <Text 
         style={{
             ...textStyle
-        }}> Congrats, Try a new game. {"\n"} We think your moves was as few as possible </Text>         
+        }}> {randomPickFromCurrentNode(messages.gameScreen.endGame.asExpected)} </Text>         
 
     }else{
         return <Text 
         style={{
             ...textStyle
-        }}> Wow, just Wow, your moves was fewer than our expectations, 
-        {"\n"} Consider applying for NASA or something ...  </Text>             
+        }}> {randomPickFromCurrentNode(messages.gameScreen.endGame.betterThanExpected)}  </Text>             
     }
 }
 }

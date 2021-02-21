@@ -1,7 +1,8 @@
 import {InfoBar,GameScreenModal, Tile, NavBar,ControlBar, ConversationModal} from "../components/" ; 
 import React from "react" ; 
 import {observer} from "mobx-react-lite" ;
-import {View} from "react-native" ; 
+import {ActivityIndicator, View} from "react-native" ; 
+import {colors} from "../styles/styles" ; 
 
 export const GameScreen = observer((props)=>(
     <View style={{
@@ -33,7 +34,7 @@ export const GameScreen = observer((props)=>(
         alignItems: 'center',
         marginBottom: 30,
       }}> 
-      {[...Array(props.store.heightTileNum).keys()].map(height_idx => (
+      {props.store.gameCreateStatus == 'success' ? [...Array(props.store.heightTileNum).keys()].map(height_idx => (
         <View style={[
           {flexDirection: 'row'}
           ]}
@@ -45,8 +46,9 @@ export const GameScreen = observer((props)=>(
           )
           }
         </View>
-      ))}
+      )) : <ActivityIndicator size='large' color={colors.light.primary} /> }
       </View>
+
       <View style={{
       }}>
         

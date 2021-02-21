@@ -2,6 +2,7 @@ import { View, TouchableHighlight, Image, Text } from "react-native";
 import React from "react" ; 
 import {observer} from 'mobx-react-lite'
 import {colors} from "../styles/styles" 
+import {tileMargin} from "../env" 
 
 const backIcon = require("../assets/Back.png") ; 
 
@@ -17,7 +18,8 @@ export const NavBar = observer((props)=>(
     marginBottom: 10, 
     backgroundColor: colors.light.fillArea,
     alignSelf: 'stretch',
-    //minWidth: props.store.tileSize * props.store.widthTileNum + 1,
+    minWidth: props.store.tileSize * props.store.widthTileNum, 
+    //minWidth: props.store.tileSize * (props.store.widthTileNum + 2*tileMargin) ,
   }}>
     <TouchableHighlight style={{
     }} onPress={()=>props.rootStore.setNavStack()}>

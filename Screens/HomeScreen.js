@@ -11,7 +11,8 @@ export const HomeScreen = observer((props)=>(
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        minWidth: props.store.tileSize * props.store.widthTileNum,
     }}>
         <Text style={{
             fontSize: 35,
@@ -59,10 +60,11 @@ export const HomeScreen = observer((props)=>(
                     margin: 10,
 
                 }} onPress={()=>{ /* Applying SnapShot of Settings Upon Creation of New Game from Home 
-                    Screen */ 
+                    Screen */    props.store.setCreateGameState('pending') ; 
                                  applySnapshot(props.rootStore.store, getSnapshot(props.rootStore.toBeAppliedStore)) ;
+                                 props.rootStore.setNavStack('game');
                                  props.rootStore.store.setUpNewGame();
-                                 props.rootStore.setNavStack('game');}} >
+                                 }} >
                     <Text style={[
                         {
                             fontSize: 25,

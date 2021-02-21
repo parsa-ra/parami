@@ -15,7 +15,7 @@ export const messages = {
                 1: "You're making my digital hearth pounding again ... ",
             },
             firstTime: {
-                0: "Welcome to Parami ... ",
+                0: "Welcome to Parami ... By tapping in each tile, The nearby tiles including tapped tile will be flipped According to some mode which can be selected from Settings ... Now Try to make the whole table the same color ",
             },
         }
     },
@@ -36,8 +36,22 @@ export const messages = {
             1: "Don't Give Up that easily",
         },
         solutionTip:{
-            0: 'By hitting the reset button 3 Times You can view the solution to the current state of the puzzle.',
-            
+            0: 'By hitting the reset button 3 Times You can view the solution to the current state of the puzzle.',        
+        },
+        endGame: {
+            betterThanExpected:{
+                0: 'Wow, just Wow, your moves was fewer than our expectations, Consider applying for NASA or something ...',
+            },
+            asExpected:{
+                0: 'Congrats, Try a new game. \n We think your moves was as few as possible'
+            },
+            worseThanExpected: {
+                0: 'You Done It, But it can be solved with fewer moves want to try again? Or you can start new game',
+            },
+            whenSolutionIsOn:{
+                0: "Don't Worry You'll Solve it Next Time ... ", 
+                1: "You'll be a Parami Master in no Time ... ",
+            },
         }
     },
     settingScreen: {

@@ -51,6 +51,8 @@ export const GameStore = types.model({
     enableSolution: types.optional(types.boolean, true),
     viewSolution: types.optional(types.boolean, false),
 
+    gameCreateStatus: types.optional(types.enumeration(['pending', 'failed', 'success']),'pending'),
+
     //////////////////
     // General States
     /////////////////
@@ -204,7 +206,12 @@ export const GameStore = types.model({
         self.resetHitCount = 0 ; 
         self.resetWithoutTrial = 0 ;
     },
+    setCreateGameState(state){
+        self.gameCreateState = state ; 
+    },
     setUpNewGame(){
+        try{
+        self.gameCreateStatus = 'pending' ; 
         let conditionIterationNewGame = 1 ; 
         self.resetSolution() ; 
         getParent(self).increaseTotalPlayedGame() ; 
@@ -268,7 +275,12 @@ export const GameStore = types.model({
 
         self.initialSolution = cast(self.gameSolution.toJSON()) ;
         self.setTileColors() ;  
-        self.goodEndFlipCount = randomFlipNumber ;    
+        self.goodEndFlipCount = randomFlipNumber ;   
+        self.gameCreateStatus = 'success' ;
+        } catch (e){
+            console.warn(e); 
+            self.gameCreateStatus = 'failed' ; 
+        }
     },
     setResetHitCount(value){
         self.resetHitCount = value ; 

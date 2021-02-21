@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, Dimensions, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, ActivityIndicator, BackHandler} from 'react-native';
 //import {AsyncStorage} from 'react-native'
 import {GameStore} from "./models/GameStore" ;
 import {RootStore} from "./models/RootStore" ; 
@@ -153,7 +153,7 @@ const loadRootStore = async () => {
       {
         'message' : messages.general.userEntersTheGame.firstTime[uniformIntTo(Object.keys(messages.general.userEntersTheGame.firstTime).length)],
         'screen': 'home',
-        'timeout': 4000, 
+        'timeout': 14000, 
         'type': 'tip.normal',
       }
     ) ;
@@ -253,8 +253,31 @@ export default function App() {
       console.warn(e) ; 
     }
 
-  }, []) // Note that the empty list at the end meant to useEffect to only fire once when the object mounted.
+  }, []) ;// Note that the empty list at the end meant to useEffect to only fire once when the object mounted.
 
+
+  // Setting Up BackHandler.  // Android Only 
+  useEffect(()=>{
+    const backHandler = ()=>{
+      console.log("Back Pressed") ; 
+      if(appState){
+        if(rootStore.lastNavEntry == 'home'){
+          BackHandler.exitApp() ; 
+        }else{
+          rootStore.setNavStack(); 
+        }
+
+        //console.log("Handled by Us") ;
+        return true; 
+
+      }else{
+        return false; 
+      }
+    }
+
+    BackHandler.addEventListener("hardwareBackPress", backHandler) ; 
+
+  }, [appState]) ; 
   
   return appState ? 
     <View style={[styles.container, {
@@ -264,8 +287,7 @@ export default function App() {
       
       <StatusBar hidden={true} />
     </View> 
-    : //For Web only
-    <View style={{justifyContent: 'center', alignItems: 'center', flex:1}}>
+    : <View style={{justifyContent: 'center', alignItems: 'center', flex:1}}>
       <ActivityIndicator/>
     </View>
     

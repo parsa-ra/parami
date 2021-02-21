@@ -13,7 +13,7 @@ export const Navigator = observer((props)=>{
         // Note what we pass to the Store... 
         return <SettingScreen rootStore={props.rootStore} store={props.rootStore.toBeAppliedStore}/>
       case 'about':
-        return <AboutScreen rootStore={props.rootStore}/>
+        return <AboutScreen rootStore={props.rootStore} store={props.rootStore.store}/>
     }
   }) ; 
   ; 
