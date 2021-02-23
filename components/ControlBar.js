@@ -10,7 +10,7 @@ export const ControlBar = observer((props)=>(
     <View style={{
       flexDirection: 'row',
       marginBottom: 20, 
-      backgroundColor: colors.light.fillAreaDark,
+      backgroundColor: colors[props.rootStore.colorScheme].fillAreaDark,
       //borderWidth: 3,
       borderRadius: 3,
       justifyContent: 'center', 
@@ -27,7 +27,7 @@ export const ControlBar = observer((props)=>(
         <TouchableHighlight onPress={()=>{ props.store.toggleViewSolution() 
                                             }}> 
                     <View style={{
-                        backgroundColor: colors.light.info,
+                        backgroundColor: colors[props.rootStore.colorScheme].info,
                         borderRadius: 4,
                         padding:10,
                         margin:10,
@@ -35,7 +35,7 @@ export const ControlBar = observer((props)=>(
                     }}>
                         <Text style={{
                             fontSize: 20,
-                            color: colors.light.textColor,
+                            color: colors[props.rootStore.colorScheme].textColor,
                             padding: 5,
                         }}>
                             ?
@@ -51,7 +51,7 @@ export const ControlBar = observer((props)=>(
             props.store.setTileColors() ;
             }}> 
             <View style={{
-                backgroundColor: colors.light.secondary,
+                backgroundColor: colors[props.rootStore.colorScheme].secondary,
                 borderRadius: 4,
                 padding:10,
                 margin:10,
@@ -59,7 +59,7 @@ export const ControlBar = observer((props)=>(
             }}>
                 <Text style={{
                     fontSize: 20,
-                    color: colors.light.textColor,
+                    color: colors[props.rootStore.colorScheme].textColor,
                     padding: 5,
                 }}>
                     Reset
@@ -70,7 +70,7 @@ export const ControlBar = observer((props)=>(
 
       <TouchableHighlight onPress={()=>{props.store.setUpNewGame()}}> 
             <View style={{
-                backgroundColor: colors.light.primary,
+                backgroundColor: colors[props.rootStore.colorScheme].primary,
                 borderRadius: 4,
                 padding:10,
                 margin:10,
@@ -78,7 +78,7 @@ export const ControlBar = observer((props)=>(
             }}>
                 <Text style={{
                     fontSize: 20,
-                    color: colors.light.textColor,
+                    color: colors[props.rootStore.colorScheme].textColor,
                     padding: 5,
                 }}>
                     New Game

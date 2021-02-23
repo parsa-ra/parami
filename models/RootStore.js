@@ -8,20 +8,20 @@ import {timeout} from "../Functions/Utils"
 
 const seperator = '.' 
 const notificationColors =[]  ; 
+
+// TODO: All Color Schemes should have the same keys recursively CHECK IT HERE. 
 for(var typeCat in colors.light.message){
     for(var catColor in colors.light.message[typeCat] ){
         notificationColors.push(typeCat + seperator + catColor) ; 
     }
 } 
-// Overall Game State 
-// TODO: This should be loaded each time game starts up
 
 export const ModalNotification = types.model({
     type: types.enumeration(notificationColors),
     message: types.string,
     timeout: types.optional(types.number, 1000),
     screen: types.enumeration(screens), 
-}) 
+}) ;
 
 const GameStoreDefaultValues = {
     possibleColors: [], 
@@ -58,6 +58,8 @@ export const RootStore = types.model({
     messageView: types.optional(types.boolean, false),
     viewClosePending: types.optional(types.boolean, false),
     currentNotificationIdx: types.optional(types.number, 0),
+
+    colorScheme: types.enumeration(['light', 'dark']),
     
 }).actions((self)=>{
     let viewTimeOut ; 
@@ -87,6 +89,9 @@ export const RootStore = types.model({
         },
         increaseTotalPlayedGame(){
             self.totalGamePlayed += 1 ;
+        },
+        setColorScheme(colorScheme){
+            self.colorScheme = colorScheme ; 
         },
         setStore(store){
             applySnapshot(self.store, getSnapshot(store)) ;  

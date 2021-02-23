@@ -16,7 +16,7 @@ export const NavBar = observer((props)=>(
     // right: 0,
     // minHeight: 100,
     marginBottom: 10, 
-    backgroundColor: colors.light.fillArea,
+    backgroundColor: colors[props.rootStore.colorScheme].fillArea,
     alignSelf: 'stretch',
     minWidth: props.store.tileSize * props.store.widthTileNum, 
     //minWidth: props.store.tileSize * (props.store.widthTileNum + 2*tileMargin) ,
@@ -33,10 +33,10 @@ export const NavBar = observer((props)=>(
         <Image source={backIcon}style={{
             width: 40,
             height: 40,
-            tintColor: colors.light.primary,
+            tintColor: colors[props.rootStore.colorScheme].primary,
         }}/>
         <Text style={{
-            color: colors.light.primary,
+            color: colors[props.rootStore.colorScheme].primary,
             fontSize: 20, 
         }}>
             Back

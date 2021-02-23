@@ -6,8 +6,9 @@ import {GameStore} from "./models/GameStore" ;
 import {RootStore} from "./models/RootStore" ; 
 import {window, screen} from "./env" ;
 import {autorun} from "mobx" 
+import {colors} from "./styles/styles" ; 
 
-import {colors, randomPickFromCurrentNode, timeout, uniformIntTo} from "./Functions/Utils" ;
+import {randomPickFromCurrentNode, timeout, uniformIntTo} from "./Functions/Utils" ;
 
 import {observer} from "mobx-react-lite" ; 
 import { applySnapshot, getSnapshot, onPatch, onSnapshot, unprotect } from 'mobx-state-tree';
@@ -147,7 +148,8 @@ const loadRootStore = async () => {
            'home'
         ],
         notificationQueue: [
-        ]
+        ],
+        colorScheme: 'light' , 
     }) ;
     rootStore.pushToNotificationQueue(
       {
@@ -279,14 +281,7 @@ export default function App() {
 
   }, [appState]) ; 
   
-  return appState ? 
-    <View style={[styles.container, {
-    }]}>
-
-      <Navigator rootStore={rootStore}/>
-      
-      <StatusBar hidden={true} />
-    </View> 
+  return appState ? <Container rootStore={rootStore}/>
     : <View style={{justifyContent: 'center', alignItems: 'center', flex:1}}>
       <ActivityIndicator/>
     </View>
@@ -294,13 +289,25 @@ export default function App() {
   ;
 }
 
+const Container = observer((props)=>(
+  <View style={[styles.container, {
+    backgroundColor: colors[props.rootStore.colorScheme].backGroundColor, 
+  }]}>
+
+    <Navigator rootStore={props.rootStore}/>
+    
+    <StatusBar hidden={true} />
+  </View> 
+)); 
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 0,
     padding: 0,
     flexDirection: 'column',
-    backgroundColor: '#fff',
+    //backgroundColor: '#fff',
     alignItems: 'center',
   },
 });

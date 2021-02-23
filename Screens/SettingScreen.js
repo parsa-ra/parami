@@ -1,5 +1,6 @@
 import React from "react" ; 
 import {observer} from "mobx-react-lite" ;
+import {autorun} from "mobx"
 import {View, Text, TouchableHighlight, ScrollView, StyleSheet, StatusBarm, Image} from "react-native" ; 
 import {NavBar} from "../components/NavBar" ; 
 import {colors} from "../styles/styles" ; 
@@ -7,25 +8,32 @@ import {GameStore} from "../models/GameStore"
 import { messages } from "../components/Messages";
 import {ConversationModal} from "../components/Modals" ; 
 import {randomPickFromCurrentNode} from "../Functions/Utils" ; 
+import { RootStore } from "../models/RootStore";
 
-const styles = StyleSheet.create({
-    settingHeader:{
-        textAlign: 'left',
-        color: colors.light.textFillAreaLight,
-        fontSize: 25, 
-    },
-    settingDescription:{
-        textAlign: 'left',
-        color: colors.light.textFillAreaLightest,
-        flexWrap: 'wrap',
-        fontSize: 15,
-    },
-    horizontalLine:{
-        borderTopWidth: 1,
-        borderTopColor: colors.light.textFillAreaLight,
-        margin: 5, 
+
+
+const styles = (type, colorScheme) => {
+    if(type == 'settingHeader'){
+        return {
+            textAlign: 'left',
+            color: colors[colorScheme].textFillAreaLight,
+            fontSize: 25, 
+        }
+    }else if(type == 'settingDescription'){
+        return {
+            textAlign: 'left',
+            color: colors[colorScheme].textFillAreaLightest,
+            flexWrap: 'wrap',
+            fontSize: 15,
+        }
+    }else if(type == 'horizontalLine'){
+        return {borderTopWidth: 1,
+        borderTopColor: colors[colorScheme].textFillAreaLight,
+        margin: 5
+        }
     }
-})
+
+}
 
 const modeDescription = (modeName) => {
     switch(modeName){
@@ -43,9 +51,9 @@ const ControlButt = observer((props)=>(
     onPress={()=>{props.store.setTileCount(props.ident, props.value)}}>
         <View style={{
             justifyContent: 'center',
-            borderColor: colors.light.fillAreaDark,
+            borderColor: colors[props.colorScheme].fillAreaDark,
             borderWidth: 5,
-            backgroundColor: colors.light.fillArea,
+            backgroundColor: colors[props.colorScheme].fillArea,
             borderRadius: 10, 
             margin: 10,
         }}>
@@ -79,7 +87,7 @@ const ValueController = observer((props)=>(
             margin: 3,
             flexDirection: 'row',
             flex: 1, 
-            backgroundColor: colors.light.fillAreaDark, 
+            backgroundColor: colors[props.colorScheme].fillAreaDark, 
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 6,
@@ -89,7 +97,7 @@ const ValueController = observer((props)=>(
         <Text style={{
             textAlign: 'left',
             fontSize: 20, 
-            color: colors.light.textFillAreaLightest,
+            color: colors[props.colorScheme].textFillAreaLightest,
         }
         }>
             {props.name} : 
@@ -102,7 +110,7 @@ const ValueController = observer((props)=>(
             justifyContent: 'center',
         }}>
             
-        <ControlButt store={props.store} displayText="-" ident={props.ident} value={props.value-1}/>
+        <ControlButt store={props.store} displayText="-" ident={props.ident} value={props.value-1} colorScheme={props.colorScheme}/>
 
         <View style={{
             flex:1,
@@ -117,7 +125,7 @@ const ValueController = observer((props)=>(
             </Text>
         </View>
 
-        <ControlButt store={props.store} displayText="+" ident={props.ident} value={props.value+1}/>
+        <ControlButt store={props.store} displayText="+" ident={props.ident} value={props.value+1} colorScheme={props.colorScheme}/>
         </View>
 
     </View>
@@ -153,9 +161,9 @@ const ModeItem = observer((props)=>(
         alignItems: 'center',
         flexDirection: 'row',
         margin: 4, 
-        backgroundColor: colors.light.fillArea ,
+        backgroundColor: colors[props.colorScheme].fillArea ,
         borderRadius: 5,
-        borderColor: props.modeName == props.store.flipMode ? colors.light.primary : colors.light.fillAreaDark,
+        borderColor: props.modeName == props.store.flipMode ? colors[props.colorScheme].primary : colors[props.colorScheme].fillAreaDark,
         borderWidth: props.modeName == props.store.flipMode ? 3 : 0,
         justifyContent: 'flex-start',
     }}
@@ -191,7 +199,7 @@ const ModeItem = observer((props)=>(
             }}>
                 <Text style={{
                     fontSize: 15, 
-                    color: props.modeName == props.store.flipMode ? colors.light.primary : colors.light.textFillAreaLightest,
+                    color: props.modeName == props.store.flipMode ? colors[props.colorScheme].primary : colors[props.colorScheme].textFillAreaLightest,
                     textAlign: 'left',
                     padding: 10, 
                     flexWrap: 'wrap',
@@ -210,22 +218,22 @@ const MultiSelectItem = observer((props)=>(
         alignItems: 'center',
         margin: 4,
     }}
-    onPress = {()=>props.store.setDifficulty(props.diffName)}>
+    onPress = {()=>props.onPressHandler(props.value)}>
         <View style={
             {margin: 2, 
             borderRadius: 5,
-            backgroundColor: colors.light.fillArea ,
-            borderColor: props.diffName == props.store.difficulty ? colors.light.primary : colors.light.fillAreaDark,
-            borderWidth: props.diffName == props.store.difficulty ? 3 : 0
+            backgroundColor: colors[props.colorScheme].fillArea ,
+            borderColor: props.value == props.currentValue ? colors[props.colorScheme].primary : colors[props.colorScheme].fillAreaDark,
+            borderWidth: props.value == props.currentValue ? 3 : 0
         }
         }>
             <Text style={{
                 fontSize: 20, 
-                color: props.diffName == props.store.difficulty ? colors.light.primary : colors.light.textFillAreaLightest ,
+                color: props.value == props.currentValue ? colors[props.colorScheme].primary : colors[props.colorScheme].textFillAreaLightest ,
                 textAlign: 'center',
                 padding: 10,
             }}>
-                {props.diffName} 
+                {props.value} 
             </Text>
         </View> 
     </TouchableHighlight>
@@ -236,7 +244,7 @@ const Tickable = observer((props)=>{
     return <View style={{
         flexDirection: 'column',
     }}> 
-        <Text style={[styles.settingHeader]}>
+        <Text style={{...styles('settingHeader', props.colorScheme)}}>
             {props.Header}
         </Text>
 
@@ -253,20 +261,20 @@ const Tickable = observer((props)=>{
                 <View style={{
                     borderRadius: 5,
                     borderWidth: 3,
-                    borderColor: colors.light.fillAreaDark,
+                    borderColor: colors[props.colorScheme].fillAreaDark,
                     height: 30,
                     width: 30,
                     margin: 5,
                 }} >
                 <View style={{
-                    backgroundColor: props.enabled ? colors.light.primary : colors.light.fillArea,
+                    backgroundColor: props.enabled ? colors[props.colorScheme].primary : colors[props.colorScheme].fillArea,
                     flex: 1,
                 }}>
 
                 </View>
                 </View>
 
-                <Text style={[styles.settingDescription, {
+                <Text style={[{...styles('settingDescription', props.colorScheme)}, {
                     flex: 1,
                     textAlignVertical: 'center',
                 }]}>
@@ -282,13 +290,13 @@ const SettingButt = observer((props) => (
     <TouchableHighlight style={{
         flexDirection: 'row',
         margin: 5,
-        backgroundColor: colors.light.fillArea,
+        backgroundColor: colors[props.colorScheme].fillArea,
     }} onPress={props.pressHandler}>
         <View style={{
             justifyContent: 'flex-start',
             padding: 5, 
         }}>
-            <Text style={[styles.settingHeader]}>
+            <Text style={{...styles('settingHeader', props.colorScheme)}}>
                 {props.Name}
             </Text>
         </View>
@@ -314,21 +322,21 @@ export const SettingScreen = observer((props)=>(
                 margin: 10,
             }}>
 
-            <Text style={[styles.settingDescription]}>
+            <Text style={{...styles('settingDescription',props.rootStore.colorScheme)}}>
                     By creating a New Game from Home Screen your settings will be applied automatically.
             </Text>
 
 
-            <Text style={[styles.settingHeader]}>
+            <Text style={{...styles('settingHeader', props.rootStore.colorScheme)}}>
                     Modes
                 </Text>
-                <Text style={[styles.settingDescription]}>
+                <Text style={{...styles('settingDescription',props.rootStore.colorScheme)}}>
                     Change How the flipping occurs.
                 </Text>
-                <View style={[styles.horizontalLine]}/>
+                <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/>
                 <View style={   // Nested ScrollView not working really well in some phones .
                     {
-                    backgroundColor: colors.light.fillAreaDark,
+                    backgroundColor: colors[props.rootStore.colorScheme].fillAreaDark,
                     flexDirection: 'column',
                     flex: 1,
                     borderRadius: 6,
@@ -341,7 +349,7 @@ export const SettingScreen = observer((props)=>(
                     {
                         GameStore.properties.flipMode._types.map(item => (
                             
-                            <ModeItem modeName={item.value} store={props.store} key={item.value}/>
+                            <ModeItem modeName={item.value} store={props.store} key={item.value} colorScheme={props.rootStore.colorScheme}/>
                             
                         ))
                     }
@@ -349,18 +357,18 @@ export const SettingScreen = observer((props)=>(
                 </View>
 
 
-                <Text style={[styles.settingHeader]}>
+                <Text style={{...styles('settingHeader', props.rootStore.colorScheme)}}>
                     Difficulty
                 </Text>
-                <Text style={[styles.settingDescription]}>
+                <Text style={{...styles('settingDescription',props.rootStore.colorScheme)}}>
                     How perplexing the solution do you want to be?
                 </Text>
-                <View style={[styles.horizontalLine]}/>
+                <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/>
 
                 <View   style={{
                     flexDirection:'row', 
                     flex: 1, 
-                    backgroundColor: colors.light.fillAreaDark,
+                    backgroundColor: colors[props.rootStore.colorScheme].fillAreaDark,
                     justifyContent: 'space-evenly',
                     alignItems: 'center',
                     //flexWrap: 'wrap',
@@ -368,24 +376,49 @@ export const SettingScreen = observer((props)=>(
                     margin: 4,
                 }}>
                     { GameStore.properties.difficulty._types.map(item => (
-                        <MultiSelectItem diffName={item.value} store={props.store} key={item.value}/>
+                        <MultiSelectItem value={item.value} store={props.store} key={item.value}
+                        onPressHandler={props.rootStore.store.setDifficulty} currentValue={props.store.difficulty} colorScheme={props.rootStore.colorScheme} />
                     )) }
                 </View>               
-                {/*<View style={[styles.horizontalLine]}/>*/}
+                {/* <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/> */}
 
+                
+                <Text style={{...styles('settingHeader', props.rootStore.colorScheme)}}>
+                    Color Scheme
+                </Text>
+                <Text style={{...styles('settingDescription',props.rootStore.colorScheme)}}>
+                    Set your preferred color scheme, scientifically speaking neither is good for your eyes XD.
+                </Text>
+                <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/>
 
-                <Text style={[styles.settingHeader]}>
+                <View   style={{
+                    flexDirection:'row', 
+                    flex: 1, 
+                    backgroundColor: colors[props.rootStore.colorScheme].fillAreaDark,
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                    //flexWrap: 'wrap',
+                    borderRadius: 6,
+                    margin: 4,
+                }}>
+                    { RootStore.properties.colorScheme._types.map(item => (
+                        <MultiSelectItem value={item.value} store={props.store} key={item.value}
+                        onPressHandler={props.rootStore.setColorScheme} currentValue={props.rootStore.colorScheme} colorScheme={props.rootStore.colorScheme}/>
+                    )) }
+                </View>  
+
+                <Text style={{...styles('settingHeader', props.rootStore.colorScheme)}}>
                     Tile Count
                 </Text> 
-                <Text style={[styles.settingDescription]}>
+                <Text style={{...styles('settingDescription',props.rootStore.colorScheme)}}>
                     How many tiles do you want to appear in your screen?
                 </Text>
-                <View style={[styles.horizontalLine]}/>
+                <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/>
                 
-                <ValueController store={props.store} name=" Width Tiles Number" ident="width" value={props.store.widthTileNum}/>
-                <ValueController store={props.store} name=" Height Tiles Number" ident="height" value={props.store.heightTileNum}/>
+                <ValueController store={props.store} name=" Width Tiles Number" ident="width" value={props.store.widthTileNum} colorScheme={props.rootStore.colorScheme}/>
+                <ValueController store={props.store} name=" Height Tiles Number" ident="height" value={props.store.heightTileNum} colorScheme={props.rootStore.colorScheme}/>
 
-                <View style={[styles.horizontalLine]}/>
+                <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/>
                 <Tickable Header="Conversation Mode" Description="Using this feature, you allow me talk back to your actions." 
                 pressHandler={()=>{
                     if(props.rootStore.enabledConversationMode){
@@ -406,20 +439,21 @@ export const SettingScreen = observer((props)=>(
                         });
                     }
                 }}
-                enabled={props.rootStore.enabledConversationMode}/>
+                enabled={props.rootStore.enabledConversationMode}
+                colorScheme={props.rootStore.colorScheme}/>
 
 
 
                 {/*                 
-                <View style={[styles.horizontalLine]}/>
+                <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/>
                 <SettingButt Name=""/> */}
 
-                <View style={[styles.horizontalLine]}/>
-                <SettingButt  Name="Open Source Licenses"/>
+                <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/>
+                <SettingButt  Name="Open Source Licenses" colorScheme={props.rootStore.colorScheme}/>
 
 
-                <View style={[styles.horizontalLine]}/>
-                <SettingButt Name="About" pressHandler={()=>props.rootStore.setNavStack("about")}/>
+                <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/>
+                <SettingButt Name="About" pressHandler={()=>props.rootStore.setNavStack("about")} colorScheme={props.rootStore.colorScheme}/>
 
                 
 

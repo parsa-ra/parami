@@ -11,7 +11,7 @@ export const InfoBar = observer((props)=>(
     <View style={{
       flexDirection: 'row',
       marginBottom: 20, 
-      backgroundColor: colors.light.fillAreaDark,
+      backgroundColor: colors[props.colorScheme].fillAreaDark,
       //borderWidth: 3,
       borderRadius: 3,
       justifyContent: 'center', 
@@ -30,7 +30,7 @@ export const InfoBar = observer((props)=>(
         //adjustsFontSizeToFit: true,
         padding: 10}}>
         <Text style={{
-            color: colors.light.textFillAreaLight,
+            color: colors[props.colorScheme].textFillAreaLight,
             fontSize: 20,
             textAlign: 'center',
             flexWrap: 'wrap', 

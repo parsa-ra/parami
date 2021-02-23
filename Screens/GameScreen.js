@@ -19,14 +19,14 @@ export const GameScreen = observer((props)=>(
       <ConversationModal store={props.store} rootStore={props.rootStore}/>
       }
       
-      <GameScreenModal store={props.store}/>
+      <GameScreenModal store={props.store} rootStore={props.rootStore} colorScheme={props.rootStore.colorScheme}/>
       <NavBar rootStore={props.rootStore} store={props.store}/>
       <View style={
         {flexDirection: 'column',
          padding: 0,
          margin: 0,
         }}>
-        <InfoBar store={props.store} />
+        <InfoBar store={props.store} colorScheme={props.rootStore.colorScheme} />
         <ControlBar store={props.store} rootStore={props.rootStore}/>
       </View>
       <View style={{
@@ -46,7 +46,7 @@ export const GameScreen = observer((props)=>(
           )
           }
         </View>
-      )) : <ActivityIndicator size='large' color={colors.light.primary} /> }
+      )) : <ActivityIndicator size='large' color={colors[props.rootStore.colorScheme].primary} /> }
       </View>
 
       <View style={{

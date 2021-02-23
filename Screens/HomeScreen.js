@@ -1,7 +1,7 @@
 import React from "react" ; 
 import {observer} from "mobx-react-lite" ;
 import {View, Text, TouchableHighlight} from "react-native" ; 
-import {colors, textStyle} from "../styles/styles" ; 
+import {colors} from "../styles/styles" ; 
 import {gameName, version} from "../env" ; 
 import { applySnapshot, getSnapshot } from "mobx-state-tree";
 import {ConversationModal} from "../components/Modals" ; 
@@ -16,7 +16,7 @@ export const HomeScreen = observer((props)=>(
     }}>
         <Text style={{
             fontSize: 35,
-            color: colors.light.primary,
+            color: colors[props.rootStore.colorScheme].primary,
             textAlign: 'center',
             marginTop: 60,      
         }}>
@@ -34,7 +34,7 @@ export const HomeScreen = observer((props)=>(
 
             { props.rootStore.totalGamePlayed != 0  ? <View>
                 <TouchableHighlight  style={{
-                    backgroundColor: colors.light.secondary,
+                    backgroundColor: colors[props.rootStore.colorScheme].secondary,
                     padding: 15,
                     borderRadius: 6, 
                     margin: 10,
@@ -43,7 +43,7 @@ export const HomeScreen = observer((props)=>(
                         {
                             fontSize: 25,
                             textAlign: 'center',
-                            color: colors.light.textColor,
+                            color: colors[props.rootStore.colorScheme].textColor,
                         }
                     ]}>
                         Pick Where You Left
@@ -54,7 +54,7 @@ export const HomeScreen = observer((props)=>(
 
             <View>
                 <TouchableHighlight  style={{
-                    backgroundColor: colors.light.primary,
+                    backgroundColor: colors[props.rootStore.colorScheme].primary,
                     padding: 15,
                     borderRadius: 6, 
                     margin: 10,
@@ -69,7 +69,7 @@ export const HomeScreen = observer((props)=>(
                         {
                             fontSize: 25,
                             textAlign: 'center',
-                            color: colors.light.textColor,
+                            color: colors[props.rootStore.colorScheme].textColor,
                         }
                     ]}>
                         New Game
@@ -79,7 +79,7 @@ export const HomeScreen = observer((props)=>(
 
             <View>
                 <TouchableHighlight  style={{
-                    backgroundColor: colors.light.trinary,
+                    backgroundColor: colors[props.rootStore.colorScheme].trinary,
                     padding: 15,
                     borderRadius: 6, 
                     margin: 10,
@@ -88,7 +88,7 @@ export const HomeScreen = observer((props)=>(
                         {
                             fontSize: 25,
                             textAlign: 'center',
-                            color: colors.light.textColor,
+                            color: colors[props.rootStore.colorScheme].textColor,
                         }
                     ]}>
                         Settings
@@ -101,7 +101,7 @@ export const HomeScreen = observer((props)=>(
         }}>
             <Text style={{
                 fontSize: 10,
-                color: colors.light.textFillAreaLightest,
+                color: colors[props.rootStore.colorScheme].textFillAreaLightest,
                 textAlign: 'center'
             }}>
                 Parami®{"\n"} Version: {version} 

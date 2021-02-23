@@ -1,23 +1,20 @@
 import React, { useState, useEffect, useRef } from "react" ; 
 import {observer} from "mobx-react-lite" ; 
 import { Animated, View, Text, Modal, TouchableHighlight } from "react-native";
-import {colors, textStyle} from "../styles/styles" ; 
+import {colors} from "../styles/styles" ; 
 import { uniformIntTo} from "../Functions/Utils" ; 
 import { set } from "react-native-reanimated";
 import {messages} from "../components/Messages"
 import {randomPickFromCurrentNode} from "../Functions/Utils" ;
 
-const messagesWhenSolutionIsOn = [
-    "Don't Worry You'll Solve it Next Time ... ", 
-    "You'll be a Parami Master in no Time ... ",
-    //TODO: Add other things.
-]
 
 const NotificationConstructor = (props) => {
     if(props.store.viewSolution){
         return <Text  
         style={{
-            ...textStyle
+            fontSize: 20,
+            color: colors[props.rootStore.colorScheme].textFillAreaLight,
+            textAlign: 'center'
         }}>
             {randomPickFromCurrentNode(messages.gameScreen.endGame.whenSolutionIsOn)} 
         </Text>
@@ -26,7 +23,9 @@ const NotificationConstructor = (props) => {
     if(props.playerMoveCount > props.goodEndFlipCount){
         return <Text 
         style={{
-            ...textStyle
+            fontSize: 20,
+            color: colors[props.rootStore.colorScheme].textFillAreaLight,
+            textAlign: 'center'
         }}> 
             {randomPickFromCurrentNode(messages.gameScreen.endGame.worseThanExpected)}
          </Text>         
@@ -34,13 +33,17 @@ const NotificationConstructor = (props) => {
     }else if(props.playerMoveCount == props.goodEndFlipCount){
         return <Text 
         style={{
-            ...textStyle
+            fontSize: 20,
+            color: colors[props.rootStore.colorScheme].textFillAreaLight,
+            textAlign: 'center'
         }}> {randomPickFromCurrentNode(messages.gameScreen.endGame.asExpected)} </Text>         
 
     }else{
         return <Text 
         style={{
-            ...textStyle
+            fontSize: 20,
+            color: colors[props.rootStore.colorScheme].textFillAreaLight,
+            textAlign: 'center'
         }}> {randomPickFromCurrentNode(messages.gameScreen.endGame.betterThanExpected)}  </Text>             
     }
 }
@@ -68,14 +71,14 @@ export const ConversationModal = observer((props)=>{
             top: topPosition,
             left: 10,
             right: 10, 
-            backgroundColor: colors.light.message[colorHierarchy[0]][colorHierarchy[1]] ,
+            backgroundColor: colors[props.rootStore.colorScheme].message[colorHierarchy[0]][colorHierarchy[1]] ,
             borderRadius: 4,
             padding: 10, 
             flex: 1 ,
             }}>
 
             <Text style={{
-                color: colors.light.textFillAreaColor,
+                color: colors[props.rootStore.colorScheme].textFillAreaColor,
                 textAlign: 'left',
                 flexWrap: 'wrap',
                 fontSize: 20,
@@ -106,7 +109,7 @@ export const GameScreenModal = observer((props)=>(
     <View
             style={{
                 zIndex: 3,
-                backgroundColor: colors.light.fillArea,
+                backgroundColor: colors[props.colorScheme].fillArea,
                 position: 'absolute',
                 left: 5, 
                 top: Math.floor(props.store.dims.height/4),
@@ -123,7 +126,7 @@ export const GameScreenModal = observer((props)=>(
                       }}>
 
 
-            <NotificationConstructor playerMoveCount={props.store.movesCount}  goodEndFlipCount={props.store.initialSolution.length} store={props.store}/>
+            <NotificationConstructor playerMoveCount={props.store.movesCount}  goodEndFlipCount={props.store.initialSolution.length} store={props.store} rootStore={props.rootStore}/>
 
 
             <View style={{
@@ -132,14 +135,14 @@ export const GameScreenModal = observer((props)=>(
             }}>           
                     <TouchableHighlight onPress={()=>{props.store.setTileColors()}}> 
                         <View style={{
-                            backgroundColor: colors.light.trinary,
+                            backgroundColor: colors[props.colorScheme].trinary,
                             borderRadius: 4,
                             padding:10,
                             margin:10,
                         }}>
                             <Text style={{
                                 fontSize: 20,
-                                color: colors.light.textColor,
+                                color: colors[props.colorScheme].textColor,
                                 padding: 10,
                             }}>
                                 Try Again
@@ -149,14 +152,14 @@ export const GameScreenModal = observer((props)=>(
 
                     <TouchableHighlight onPress={()=>{props.store.setUpNewGame()}}> 
                         <View style={{
-                            backgroundColor: colors.light.primary,
+                            backgroundColor: colors[props.colorScheme].primary,
                             borderRadius: 4,
                             padding:10,
                             margin: 10,
                         }}>
                             <Text style={{
                                 fontSize: 20,
-                                color: colors.light.textColor,
+                                color: colors[props.colorScheme].textColor,
                                 padding: 10,
                             }}>
                                 New Game
