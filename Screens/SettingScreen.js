@@ -60,6 +60,7 @@ const ControlButt = observer((props)=>(
             <Text style={{
                 fontSize: 20,
                 textAlign: 'center',
+                color: colors[props.colorScheme].textFillAreaLight,
             }}>
                 {props.displayText} 
             </Text>
@@ -119,7 +120,8 @@ const ValueController = observer((props)=>(
         }}>
             <Text style={{
                 textAlign: 'center',
-                fontSize: 20,             
+                fontSize: 20,      
+                color: colors[props.colorScheme].textFillAreaLight,       
             }}>
                 {props.value} 
             </Text>
@@ -291,10 +293,12 @@ const SettingButt = observer((props) => (
         flexDirection: 'row',
         margin: 5,
         backgroundColor: colors[props.colorScheme].fillArea,
+        borderRadius: 5, 
     }} onPress={props.pressHandler}>
         <View style={{
             justifyContent: 'flex-start',
             padding: 5, 
+            paddingLeft: 10, 
         }}>
             <Text style={{...styles('settingHeader', props.colorScheme)}}>
                 {props.Name}
@@ -404,6 +408,32 @@ export const SettingScreen = observer((props)=>(
                     { RootStore.properties.colorScheme._types.map(item => (
                         <MultiSelectItem value={item.value} store={props.store} key={item.value}
                         onPressHandler={props.rootStore.setColorScheme} currentValue={props.rootStore.colorScheme} colorScheme={props.rootStore.colorScheme}/>
+                    )) }
+                </View>  
+
+
+
+                <Text style={{...styles('settingHeader', props.rootStore.colorScheme)}}>
+                    Edge Handling
+                </Text>
+                <Text style={{...styles('settingDescription',props.rootStore.colorScheme)}}>
+                    Suppose you tap on a tile at the edge of the screen, how do you want the tiles beyond the edges act?
+                </Text>
+                <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/>
+
+                <View   style={{
+                    flexDirection:'row', 
+                    flex: 1, 
+                    backgroundColor: colors[props.rootStore.colorScheme].fillAreaDark,
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                    //flexWrap: 'wrap',
+                    borderRadius: 6,
+                    margin: 4,
+                }}>
+                    { GameStore.properties.edgeHandling._types.map(item => (
+                        <MultiSelectItem value={item.value} store={props.store} key={item.value}
+                        onPressHandler={props.store.setEdgeHandling} currentValue={props.store.edgeHandling} colorScheme={props.rootStore.colorScheme}/>
                     )) }
                 </View>  
 

@@ -29,4 +29,5 @@
 
 ## Experimental Suggestion
 * May be add Server api call for updating `messages` showed to user? 
-  
+
+* Add Edge handling, I'm thinking of `wrapping` mode in both horizontal and vertical direction. 

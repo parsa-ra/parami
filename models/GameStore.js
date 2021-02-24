@@ -98,6 +98,9 @@ export const GameStore = types.model({
     setDifficulty(diff){
         self.difficulty = diff ; 
     },
+    setEdgeHandling(edge){
+        self.edgeHandling = edge ; 
+    },
     updateState(){
         self.movesCount += 1 ;
         self.gameStatus = self.allTheSame ? 'done' : 'notdone' ; 
