@@ -59,8 +59,9 @@ export const ConversationModal = observer((props)=>{
         Animated.timing(
             topPosition,
             {
-                toValue: 20,
+                toValue: 30,
                 duration: 600,
+                useNativeDriver: true,
             }
         ).start();
     }, [topPosition]) ; 
@@ -75,7 +76,8 @@ export const ConversationModal = observer((props)=>{
             borderRadius: 4,
             padding: 10, 
             flex: 1 ,
-            }}>
+            }}
+            >
 
             <Text style={{
                 color: colors[props.rootStore.colorScheme].textFillAreaColor,
