@@ -108,7 +108,7 @@ const loadRootStore = async () => {
     rootStoreSnapShot = await AsyncStorage.getItem("rootStore") ;
     
     console.log(rootStoreSnapShot) ; 
-    if(rootStoreSnapShot != null){
+    if(rootStoreSnapShot != null){  
       console.log(JSON.parse(rootStoreSnapShot)) ; 
       //applySnapshot(rootStore, JSON.parse(rootStoreSnapShot)) ; 
       rootStore = RootStore.create(JSON.parse(rootStoreSnapShot)) ; 
@@ -272,7 +272,7 @@ export default function App() {
         //console.log("Handled by Us") ;
         return true; 
 
-      }else{
+      }else{ 
         return false; 
       }
     }

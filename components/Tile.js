@@ -4,7 +4,7 @@ import {autorun} from "mobx" ;
 import React, {useEffect, useRef, useState} from "react" 
 import {tileMargin} from "../env" ; 
 import {Hex2RGB} from "../Functions/Color"
-import Animated, { color } from "react-native-reanimated";
+//import Animated, { color } from "react-native-reanimated";
 
 const tileInternalRatio = 1/3 ; 
 
@@ -48,7 +48,7 @@ export const Tile = observer((props)=>{
 
     
     //console.log(colorRange) ; 
-    return <Animated.View style={[
+    return <View style={[
         {
             borderRadius: 4, 
             backgroundColor: props.store.tileColors[props.index], //Important   colorRange 
@@ -95,5 +95,5 @@ export const Tile = observer((props)=>{
                 
             </View>
         </TouchableHighlight>
-    </Animated.View> 
+    </View> 
 }); 

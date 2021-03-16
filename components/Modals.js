@@ -61,7 +61,7 @@ export const ConversationModal = observer((props)=>{
             {
                 toValue: 30,
                 duration: 600,
-                useNativeDriver: true,
+                //useNativeDriver: true,
             }
         ).start();
     }, [topPosition]) ; 
