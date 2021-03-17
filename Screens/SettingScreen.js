@@ -381,7 +381,7 @@ export const SettingScreen = observer((props)=>(
                 }}>
                     { GameStore.properties.difficulty._types.map(item => (
                         <MultiSelectItem value={item.value} store={props.store} key={item.value}
-                        onPressHandler={props.rootStore.store.setDifficulty} currentValue={props.store.difficulty} colorScheme={props.rootStore.colorScheme} />
+                        onPressHandler={props.rootStore.store.setDifficulty} currentValue={props.rootStore.store.difficulty} colorScheme={props.rootStore.colorScheme} />
                     )) }
                 </View>               
                 {/* <View style={{...styles('horizontalLine',props.rootStore.colorScheme)}}/> */}
