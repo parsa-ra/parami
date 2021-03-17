@@ -37,7 +37,7 @@
 ## Ideas To Implement In the Game
 * Change modes in between moves: Switch between different modes (e.g., plus sign and rectangle) after each move.
 * Move the tiles: Zoom only to a smaller fraction of the board and change the magnifier position after a couple of moves.
-* Toggle visibility of tiles.
+* Toggle visibility of the tiles.
 * Add new pairs of colors.
 * Define a template (e.g., flower picture, car picture) as a starter for the board.
 * Change the size of the board (e.g., 10x10, 16x16): The issue with increasing the size of the board is that the size of each tile becomes very small.
