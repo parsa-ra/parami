@@ -33,6 +33,7 @@
 * Add Edge handling, I'm thinking of `wrapping` mode in both horizontal and vertical direction. 
 
 
+
 ## Ideas to implement in the game
 * Change modes in between moves: Switch between different modes (e.g., plus sign and rectangle) after each move.
 * Move the tiles: Zoom only to a smaller fraction of the board and change the magnifier position after a couple of moves.
