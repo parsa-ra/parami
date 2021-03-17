@@ -34,7 +34,7 @@
 
 
 
-## Ideas to implement in the game
+## Ideas To Implement In the Game
 * Change modes in between moves: Switch between different modes (e.g., plus sign and rectangle) after each move.
 * Move the tiles: Zoom only to a smaller fraction of the board and change the magnifier position after a couple of moves.
 * Toggle visibility of tiles.
